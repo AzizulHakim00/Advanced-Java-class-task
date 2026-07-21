@@ -1,0 +1,13 @@
+target/
+build/
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+*.db-journal
+*.db-shm
+*.db-wal
+.DS_Store
+
+mazebank.db

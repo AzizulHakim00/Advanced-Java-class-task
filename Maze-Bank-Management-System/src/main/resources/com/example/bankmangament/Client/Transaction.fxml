@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="750.0" prefWidth="850.0" styleClass="transaction_container" stylesheets="@../../../../Style/Transaction.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.bankmangament.Controllers.Client.TransactionController">
+    <Text layoutX="445.0" layoutY="53.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Transactions" AnchorPane.leftAnchor="349.0" AnchorPane.topAnchor="14.0" />
+    <ListView fx:id="Transaction_list_view" layoutX="29.0" layoutY="191.0" prefHeight="640.0" prefWidth="830.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="100.0" />
+</AnchorPane>
