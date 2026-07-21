@@ -11,37 +11,60 @@
 <h1 th:text="${name}">Product Form</h1>
 
 <form method="post"
-      th:action="@{/product/add}"
+      th:action="${editMode}
+      ? @{/product/edit/{id}(id=${originalId})}
+      : @{/product/add}"
       th:object="${product}">
 
     <label>Product ID</label><br>
-    <input type="number" th:field="*{id}">
+
+    <input type="number"
+           th:field="*{id}"
+           th:readonly="${editMode}">
+
     <span th:errors="*{id}" style="color: red"></span>
     <br><br>
 
-    <label>Product name</label> <br>
+    <label>Product name</label><br>
+
     <input type="text" th:field="*{name}">
+
     <span th:errors="*{name}" style="color: red"></span>
     <br><br>
 
-    <label>Product category</label> <br>
+    <label>Product category</label><br>
+
     <input type="text" th:field="*{category}">
+
     <span th:errors="*{category}" style="color: red"></span>
     <br><br>
 
-    <label>Stock</label> <br>
+    <label>Stock</label><br>
+
     <input type="number" th:field="*{stock}">
+
     <span th:errors="*{stock}" style="color: red"></span>
     <br><br>
 
-    <label>Price</label> <br>
-    <input type="number" step="0.1" th:field="*{price}">
+    <label>Price</label><br>
+
+    <input type="number"
+           step="0.1"
+           th:field="*{price}">
+
     <span th:errors="*{price}" style="color: red"></span>
     <br><br>
 
-    <button type="submit">Add product</button>
+    <button type="submit"
+            th:text="${editMode} ? 'Update Product' : 'Add Product'">
+        Add Product
+    </button>
+
     <br><br>
-    <a th:href="@{/form}" style="color: aqua">Back to list</a>
+
+    <a th:href="@{/product/list}">
+        Back to list
+    </a>
 
 </form>
 
