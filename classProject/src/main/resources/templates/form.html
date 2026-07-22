@@ -1,0 +1,157 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Form</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+        }
+
+        .container {
+            width: 400px;
+            margin: 40px auto;
+            padding: 25px;
+            background-color: white;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3a5f;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 9px;
+            margin-top: 5px;
+            border: 1px solid #bbbbbb;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        input[readonly] {
+            background-color: #eeeeee;
+        }
+
+        span {
+            font-size: 13px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1 th:text="${name}">Weather Form</h1>
+
+    <form method="post"
+          th:action="${editMode}
+          ? @{/weather/edit/{day}(day=${originalDay})}
+          : @{/weather/add}"
+          th:object="${weather}">
+
+        <label>Weather Day</label><br>
+
+        <input type="text"
+               th:field="*{day}"
+               th:readonly="${editMode}">
+
+        <span th:errors="*{day}" style="color: red"></span>
+        <br><br>
+
+        <label>Weather Moisture</label><br>
+
+        <input type="number"
+               th:field="*{moisture}">
+
+        <span th:errors="*{moisture}" style="color: red"></span>
+        <br><br>
+
+        <label>Temperature</label><br>
+
+        <input type="number"
+               step="0.1"
+               th:field="*{temperature}">
+
+        <span th:errors="*{temperature}" style="color: red"></span>
+        <br><br>
+
+        <label>UV Index</label><br>
+
+        <input type="number"
+               step="0.1"
+               th:field="*{uvIndex}">
+
+        <span th:errors="*{uvIndex}" style="color: red"></span>
+        <br><br>
+
+        <label>Wind Speed</label><br>
+
+        <input type="number"
+               th:field="*{wind}">
+
+        <span th:errors="*{wind}" style="color: red"></span>
+        <br><br>
+
+        <button type="submit"
+                th:text="${editMode} ? 'Update Weather' : 'Add Weather'">
+            Add Weather
+        </button>
+
+        <br><br>
+
+        <a th:href="@{/weather/list}"
+           class="back-link">
+            Back to list
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+</html>
+```
