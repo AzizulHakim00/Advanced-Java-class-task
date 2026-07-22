@@ -49,9 +49,33 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public String showListProducts(Model model) {
+    public String showListProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            Model model) {
 
-        model.addAttribute("products", products);
+        List<Product> filteredProducts = products.stream()
+                .filter(product -> {
+
+                    boolean searchMatch = keyword == null
+                            || keyword.isBlank()
+                            || product.getId().toString()
+                            .contains(keyword)
+                            || product.getName().toLowerCase()
+                            .contains(keyword.toLowerCase());
+
+                    boolean categoryMatch = category == null
+                            || category.isBlank()
+                            || product.getCategory()
+                            .equalsIgnoreCase(category);
+
+                    return searchMatch && categoryMatch;
+                })
+                .toList();
+
+        model.addAttribute("products", filteredProducts);
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("category", category);
 
         return "list";
     }
