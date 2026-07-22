@@ -1,5 +1,7 @@
 package bd.edu.seu.product_shop;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,14 +10,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 public class Product {
 
+    @Id
     @NotNull(message = "ID is required")
     @Min(value = 1, message = "ID must be at least 1")
     @Max(value = 100, message = "ID must be at most 100")
     private Integer id;
 
-    @Size(min = 1 , max = 100 , message = "message must be between 1-100 chracter")
+    @Size(min = 1, max = 100,
+            message = "Name must be between 1-100 characters")
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
@@ -30,4 +35,6 @@ public class Product {
     @DecimalMin(value = "0.1", message = "Price must be more than 0")
     @DecimalMax(value = "999.99", message = "Price must be less than 1000")
     private Double price;
+
+    private String status;
 }

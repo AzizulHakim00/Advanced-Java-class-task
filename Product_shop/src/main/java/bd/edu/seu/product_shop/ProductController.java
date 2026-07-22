@@ -1,22 +1,27 @@
 package bd.edu.seu.product_shop;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/product")
 public class ProductController {
 
-    private final List<Product> products = new ArrayList<>();
+    private final ProductInterface productInterface;
+
+    /// dip ///
+//    public ProductController(ProductInterface productInterface) {
+//        this.productInterface = productInterface;
+//    }
 
     @GetMapping("/add")
     public String showProductForm(Model model) {
@@ -41,7 +46,7 @@ public class ProductController {
             return "form";
         }
 
-        products.add(product);
+        productInterface.save(product);
 
         log.info("Product added: {}", product);
 
@@ -53,6 +58,8 @@ public class ProductController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String category,
             Model model) {
+
+        List<Product> products = productInterface.findAll();
 
         List<Product> filteredProducts = products.stream()
                 .filter(product -> {
@@ -85,10 +92,7 @@ public class ProductController {
             @PathVariable Integer id,
             Model model) {
 
-        Product existingProduct = products.stream()
-                .filter(product ->
-                        Objects.equals(product.getId(), id))
-                .findFirst()
+        Product existingProduct = productInterface.findById(id)
                 .orElse(null);
 
         if (existingProduct == null) {
@@ -118,17 +122,18 @@ public class ProductController {
             return "form";
         }
 
-        for (int i = 0; i < products.size(); i++) {
+        Product existingProduct = productInterface.findById(id)
+                .orElse(null);
 
-            if (Objects.equals(products.get(i).getId(), id)) {
-
-                products.set(i, product);
-
-                log.info("Product updated: {}", product);
-
-                break;
-            }
+        if (existingProduct == null) {
+            return "redirect:/product/list";
         }
+
+        product.setId(id);
+
+        productInterface.save(product);
+
+        log.info("Product updated: {}", product);
 
         return "redirect:/product/list";
     }
@@ -136,10 +141,11 @@ public class ProductController {
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
 
-        products.removeIf(product ->
-                Objects.equals(product.getId(), id));
+        if (productInterface.existsById(id)) {
+            productInterface.deleteById(id);
 
-        log.info("Product deleted. ID: {}", id);
+            log.info("Product deleted. ID: {}", id);
+        }
 
         return "redirect:/product/list";
     }
