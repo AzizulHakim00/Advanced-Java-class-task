@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="classProject" />
+        <module name="focusforge" />
+        <module name="Product_shop" />
+        <module name="Hello_Spring_Boot_7_12_26" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="Hello_Spring_Boot_7_12_26" options="-parameters" />
+      <module name="Product_shop" options="-parameters" />
+      <module name="classProject" options="-parameters" />
+      <module name="focusforge" options="-parameters" />
+    </option>
+  </component>
+</project>
