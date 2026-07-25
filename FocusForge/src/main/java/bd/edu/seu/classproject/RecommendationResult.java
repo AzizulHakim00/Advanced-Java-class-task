@@ -10,5 +10,7 @@ import java.util.List;
 public class RecommendationResult {
     private StudyTask task;
     private int score;
+    private int matchPercentage;
+    private String matchLabel;
     private List<String> reasons;
 }
