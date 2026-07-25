@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Study Check-in</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="brand">Focus<span>Forge</span></div>
+    <div class="nav-links">
+        <a th:href="@{/focusforge/dashboard}">Dashboard</a>
+        <a th:href="@{/focusforge/tasks}">Tasks</a>
+        <a th:href="@{/focusforge/tasks/add}">Add Task</a>
+        <a th:href="@{/focusforge/check-in}">Smart Check-in</a>
+    </div>
+</nav>
+
+<main class="page">
+    <div class="form-card">
+        <h1>Smart Study Check-in</h1>
+        <p style="text-align:center;color:#64748b;line-height:1.6">Tell FocusForge how much time and energy you have. It will analyze your active tasks and recommend the best one.</p>
+
+        <form method="post" th:action="@{/focusforge/recommend}" th:object="${checkIn}">
+            <div class="form-grid">
+                <div class="field full">
+                    <label>Available Study Time (minutes)</label>
+                    <input type="number" th:field="*{availableMinutes}" min="10" max="600" placeholder="Example: 45">
+                    <span class="error" th:errors="*{availableMinutes}"></span>
+                </div>
+
+                <div class="field">
+                    <label>Energy Level</label>
+                    <select th:field="*{energyLevel}">
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                    <span class="error" th:errors="*{energyLevel}"></span>
+                </div>
+
+                <div class="field">
+                    <label>Current Mood</label>
+                    <select th:field="*{mood}">
+                        <option value="Focused">Focused</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Tired">Tired</option>
+                        <option value="Stressed">Stressed</option>
+                    </select>
+                    <span class="error" th:errors="*{mood}"></span>
+                </div>
+            </div>
+
+            <button class="btn btn-success" type="submit" style="width:100%;margin-top:20px;padding:13px">Analyze and Recommend</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

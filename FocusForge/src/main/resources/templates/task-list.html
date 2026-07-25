@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tasks</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="brand">Focus<span>Forge</span></div>
+    <div class="nav-links">
+        <a th:href="@{/focusforge/dashboard}">Dashboard</a>
+        <a th:href="@{/focusforge/tasks}">Tasks</a>
+        <a th:href="@{/focusforge/tasks/add}">Add Task</a>
+        <a th:href="@{/focusforge/check-in}">Smart Check-in</a>
+    </div>
+</nav>
+
+<main class="page">
+    <section class="section">
+        <div class="section-head">
+            <div><h2>Study Task List</h2><p style="color:#64748b">Search, filter, edit, complete or delete your tasks.</p></div>
+            <a class="btn btn-success" th:href="@{/focusforge/tasks/add}">+ Add Task</a>
+        </div>
+
+        <form class="filter-form" method="get" th:action="@{/focusforge/tasks}">
+            <div>
+                <label>Search</label>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Task or course name">
+            </div>
+            <div>
+                <label>Status</label>
+                <select name="status">
+                    <option value="">All Statuses</option>
+                    <option th:each="item : ${statuses}" th:value="${item}" th:text="${item}" th:selected="${item == selectedStatus}"></option>
+                </select>
+            </div>
+            <div>
+                <label>Importance</label>
+                <select name="importance">
+                    <option value="">All Levels</option>
+                    <option th:each="item : ${importanceLevels}" th:value="${item}" th:text="${item}" th:selected="${item == selectedImportance}"></option>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit">Search</button>
+            <a class="btn btn-muted" th:href="@{/focusforge/tasks}">Clear</a>
+        </form>
+
+        <div class="empty" th:if="${tasks.isEmpty()}" style="margin-top:18px">
+            No matching tasks found.
+        </div>
+
+        <table th:unless="${tasks.isEmpty()}">
+            <thead>
+            <tr><th>ID</th><th>Task</th><th>Course</th><th>Deadline</th><th>Minutes</th><th>Difficulty</th><th>Importance</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${task.taskId}">101</td>
+                <td><strong th:text="${task.taskName}">Task</strong></td>
+                <td th:text="${task.courseName}">Course</td>
+                <td th:text="${task.deadline}">2026-08-01</td>
+                <td th:text="${task.estimatedMinutes}">45</td>
+                <td th:text="${task.difficulty}">Medium</td>
+                <td><span class="badge" th:classappend="${task.importance == 'High' ? ' badge-high' : (task.importance == 'Medium' ? ' badge-medium' : ' badge-low')}" th:text="${task.importance}">High</span></td>
+                <td><span class="badge" th:classappend="${task.status == 'Completed' ? ' badge-completed' : (task.status == 'In Progress' ? ' badge-progress' : (task.status == 'Pending' ? ' badge-pending' : ' badge-skipped'))}" th:text="${task.status}">Pending</span></td>
+                <td>
+                    <div class="actions">
+                        <a class="btn btn-primary" th:href="@{/focusforge/tasks/edit/{id}(id=${task.taskId})}">Edit</a>
+                        <a class="btn btn-success" th:if="${task.status != 'Completed'}" th:href="@{/focusforge/tasks/complete/{id}(id=${task.taskId})}">Done</a>
+                        <a class="btn btn-danger" th:href="@{/focusforge/tasks/delete/{id}(id=${task.taskId})}" onclick="return confirm('Are you sure you want to delete this task?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

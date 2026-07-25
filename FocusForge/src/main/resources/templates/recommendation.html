@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusForge Recommendation</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<nav class="navbar">
+    <div class="brand">Focus<span>Forge</span></div>
+    <div class="nav-links">
+        <a th:href="@{/focusforge/dashboard}">Dashboard</a>
+        <a th:href="@{/focusforge/tasks}">Tasks</a>
+        <a th:href="@{/focusforge/tasks/add}">Add Task</a>
+        <a th:href="@{/focusforge/check-in}">Smart Check-in</a>
+    </div>
+</nav>
+
+<main class="page">
+    <section class="recommendation" th:if="${hasRecommendation}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap">
+            <div>
+                <p style="color:#4f46e5;font-weight:800;margin-bottom:6px">BEST TASK FOR YOU NOW</p>
+                <h1 style="margin:0" th:text="${result.task.taskName}">Recommended Task</h1>
+                <p style="color:#64748b" th:text="${result.task.courseName}">Course</p>
+            </div>
+            <div class="score" th:text="${result.score}">95</div>
+        </div>
+
+        <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+            <div class="card"><div class="stat-label">Estimated Time</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.estimatedMinutes + ' min'}">45 min</div></div>
+            <div class="card"><div class="stat-label">Difficulty</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.difficulty}">Medium</div></div>
+            <div class="card"><div class="stat-label">Deadline</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.deadline}">2026-08-01</div></div>
+        </div>
+
+        <h2>Why this task?</h2>
+        <ul class="reason-list">
+            <li th:each="reason : ${result.reasons}" th:text="${reason}">Reason</li>
+        </ul>
+
+        <div class="section" style="box-shadow:none">
+            <strong>Your check-in:</strong>
+            <span th:text="${checkIn.availableMinutes + ' minutes, ' + checkIn.energyLevel + ' energy, ' + checkIn.mood + ' mood'}"></span>
+        </div>
+
+        <div class="actions" style="margin-top:20px">
+            <a class="btn btn-success" th:href="@{/focusforge/recommendation/complete/{id}(id=${result.task.taskId})}">Mark Completed</a>
+            <a class="btn btn-primary" th:href="@{/focusforge/tasks/edit/{id}(id=${result.task.taskId})}">Update Task</a>
+            <a class="btn btn-amber" th:href="@{/focusforge/check-in}">Check Again</a>
+        </div>
+    </section>
+
+    <section class="recommendation" th:unless="${hasRecommendation}">
+        <h1>No Suitable Task Found</h1>
+        <p style="line-height:1.7;color:#64748b">There is no active task that fits your available time. Add a task, increase your available minutes, or update an existing task.</p>
+        <div class="actions">
+            <a class="btn btn-success" th:href="@{/focusforge/tasks/add}">Add Task</a>
+            <a class="btn btn-primary" th:href="@{/focusforge/check-in}">Try Again</a>
+            <a class="btn btn-muted" th:href="@{/focusforge/tasks}">View Tasks</a>
+        </div>
+    </section>
+</main>
+</body>
+</html>
