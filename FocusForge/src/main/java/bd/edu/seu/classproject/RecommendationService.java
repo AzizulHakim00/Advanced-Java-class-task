@@ -12,7 +12,6 @@ import java.util.List;
 public class RecommendationService {
 
     public RecommendationResult recommend(List<StudyTask> tasks, StudyCheckIn checkIn) {
-
         return tasks.stream()
                 .filter(task -> !"Completed".equalsIgnoreCase(task.getStatus()))
                 .filter(task -> !"Skipped".equalsIgnoreCase(task.getStatus()))
@@ -23,7 +22,6 @@ public class RecommendationService {
     }
 
     private RecommendationResult createResult(StudyTask task, StudyCheckIn checkIn) {
-
         int score = 0;
         List<String> reasons = new ArrayList<>();
 
@@ -40,7 +38,6 @@ public class RecommendationService {
         }
 
         long daysLeft = ChronoUnit.DAYS.between(LocalDate.now(), task.getDeadline());
-
         if (daysLeft < 0) {
             score += 50;
             reasons.add("Its deadline has already passed, so it needs immediate attention.");
@@ -77,11 +74,24 @@ public class RecommendationService {
             reasons.add("You have already started this task.");
         }
 
-        return new RecommendationResult(task, score, reasons);
+        int matchPercentage = normalizeScore(score);
+        return new RecommendationResult(task, score, matchPercentage, createMatchLabel(matchPercentage), reasons);
+    }
+
+    private int normalizeScore(int score) {
+        int maximumRuleScore = 147;
+        int percentage = (int) Math.round((score * 100.0) / maximumRuleScore);
+        return Math.max(0, Math.min(100, percentage));
+    }
+
+    private String createMatchLabel(int matchPercentage) {
+        if (matchPercentage >= 80) return "Excellent Match";
+        if (matchPercentage >= 65) return "Strong Match";
+        if (matchPercentage >= 45) return "Good Match";
+        return "Possible Match";
     }
 
     private int energyScore(StudyTask task, StudyCheckIn checkIn, List<String> reasons) {
-
         if ("High".equals(checkIn.getEnergyLevel())) {
             if ("Hard".equals(task.getDifficulty())) {
                 reasons.add("Your high energy matches this difficult task.");
@@ -95,9 +105,7 @@ public class RecommendationService {
                 reasons.add("The easy difficulty matches your current low energy.");
                 return 22;
             }
-            if ("Hard".equals(task.getDifficulty())) {
-                return -15;
-            }
+            if ("Hard".equals(task.getDifficulty())) return -15;
             return 8;
         }
 
@@ -105,12 +113,10 @@ public class RecommendationService {
             reasons.add("The task difficulty matches your medium energy level.");
             return 16;
         }
-
         return 10;
     }
 
     private int moodScore(StudyTask task, StudyCheckIn checkIn, List<String> reasons) {
-
         return switch (checkIn.getMood()) {
             case "Focused" -> {
                 if ("Hard".equals(task.getDifficulty())) {
