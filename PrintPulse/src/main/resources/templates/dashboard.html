@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintPulse Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/printpulse.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="header-inner">
+        <a class="brand-wrap" th:href="@{/printpulse/dashboard}">
+            <span class="brand-mark">PP</span>
+            <span><span class="brand-name">Print<span>Pulse</span></span><small class="brand-subtitle">Southeast University</small></span>
+        </a>
+        <nav class="nav-links">
+            <a class="active" th:href="@{/printpulse/dashboard}">Dashboard</a>
+            <a th:href="@{/printpulse/requests}">Print Queue</a>
+            <a th:href="@{/printpulse/requests/add}">New Request</a>
+            <a th:href="@{/printpulse/history}">History</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <section class="hero">
+        <div class="hero-content">
+            <div class="eyebrow" style="color:#8ce8f3">Campus Print Service</div>
+            <h1>Print Queue & Cost Estimator</h1>
+            <p>Manage Southeast University student print requests, calculate printing cost automatically, and track every order from waiting to collection.</p>
+        </div>
+        <div class="hero-action"><a class="btn btn-accent" th:href="@{/printpulse/requests/add}">+ New Print Request</a></div>
+    </section>
+
+    <section class="stats-grid">
+        <article class="stat-card stat-blue"><div class="stat-icon">▤</div><div class="stat-label">Total Requests</div><div class="stat-value" th:text="${totalCount}">0</div></article>
+        <article class="stat-card stat-cyan"><div class="stat-icon">◷</div><div class="stat-label">Today</div><div class="stat-value" th:text="${todayCount}">0</div></article>
+        <article class="stat-card stat-amber"><div class="stat-icon">⌛</div><div class="stat-label">Waiting</div><div class="stat-value" th:text="${waitingCount}">0</div></article>
+        <article class="stat-card stat-blue"><div class="stat-icon">▣</div><div class="stat-label">Printing</div><div class="stat-value" th:text="${printingCount}">0</div></article>
+        <article class="stat-card stat-green"><div class="stat-icon">✓</div><div class="stat-label">Ready</div><div class="stat-value" th:text="${readyCount}">0</div></article>
+        <article class="stat-card stat-purple"><div class="stat-icon">৳</div><div class="stat-label">Revenue</div><div class="stat-value" th:text="${'৳' + #numbers.formatDecimal(totalRevenue,1,2)}">৳0</div></article>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <div><div class="eyebrow">Live Operations</div><h2>Active Print Queue</h2><p>Waiting, printing, and ready requests appear here.</p></div>
+            <a class="btn btn-primary" th:href="@{/printpulse/requests}">View Full Queue</a>
+        </div>
+        <div class="empty-state" th:if="${activeQueue.isEmpty()}"><span class="empty-icon">🖨️</span>No active print requests.</div>
+        <div class="table-wrap" th:unless="${activeQueue.isEmpty()}">
+            <table class="data-table">
+                <thead><tr><th>Queue</th><th>Student</th><th>Document</th><th>Pages</th><th>Type</th><th>Cost</th><th>Status</th></tr></thead>
+                <tbody>
+                <tr th:each="item : ${activeQueue}">
+                    <td class="queue-number" th:text="${'#' + item.requestId}">#1001</td>
+                    <td><span class="primary-text" th:text="${item.studentName}">Student</span><br><span class="secondary-text" th:text="${item.studentId}">ID</span></td>
+                    <td th:text="${item.documentName}">Document</td>
+                    <td th:text="${item.totalPrintedPages}">10</td>
+                    <td th:text="${item.printType}">B&amp;W</td>
+                    <td class="money" th:text="${'৳' + #numbers.formatDecimal(item.totalCost,1,2)}">৳20</td>
+                    <td><span class="badge" th:classappend="${' ' + item.statusClass}" th:text="${item.status}">Waiting</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <p class="footer-note">PrintPulse · Southeast University Campus Print Service</p>
+</main>
+</body>
+</html>
