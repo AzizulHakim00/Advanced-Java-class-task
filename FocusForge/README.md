@@ -15,7 +15,10 @@ A small Spring Boot + Thymeleaf class project with five screens:
 - Search and filter
 - Edit, delete and mark completed
 - Dashboard statistics
+- Overdue, due today and upcoming deadline labels
+- Quick task status controls: Start, Done and Reopen
 - Mood, energy, time, deadline, difficulty and importance based recommendation
+- Normalized recommendation match percentage and match label
 - Responsive Thymeleaf interface
 
 ## Run
