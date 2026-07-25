@@ -23,16 +23,18 @@ public class StudyTask {
     @Id
     @NotNull(message = "Task ID is required")
     @Min(value = 1, message = "Task ID must be at least 1")
+    @Max(value = 9999, message = "Task ID must be at most 9999")
+    @Column(name = "task_id")
     private Integer taskId;
 
     @NotBlank(message = "Task name cannot be blank")
     @Size(min = 3, max = 100, message = "Task name must be between 3 and 100 characters")
-    @Column(nullable = false, length = 100)
+    @Column(name = "task_name", nullable = false, length = 100)
     private String taskName;
 
     @NotBlank(message = "Course name cannot be blank")
     @Size(min = 2, max = 60, message = "Course name must be between 2 and 60 characters")
-    @Column(nullable = false, length = 60)
+    @Column(name = "course_name", nullable = false, length = 60)
     private String courseName;
 
     @NotNull(message = "Deadline is required")
@@ -43,7 +45,7 @@ public class StudyTask {
     @NotNull(message = "Estimated time is required")
     @Min(value = 10, message = "Estimated time must be at least 10 minutes")
     @Max(value = 600, message = "Estimated time cannot exceed 600 minutes")
-    @Column(nullable = false)
+    @Column(name = "estimated_minutes", nullable = false)
     private Integer estimatedMinutes;
 
     @NotBlank(message = "Difficulty is required")
@@ -64,6 +66,10 @@ public class StudyTask {
     @Size(max = 300, message = "Description cannot exceed 300 characters")
     @Column(length = 300)
     private String description;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "completed_date")
+    private LocalDate completedDate;
 
     public long getDaysLeft() {
         if (deadline == null) return Long.MAX_VALUE;
@@ -95,10 +101,8 @@ public class StudyTask {
     public String getDeadlineBadgeClass() {
         if ("Completed".equalsIgnoreCase(status)) return "badge-completed";
         if ("Skipped".equalsIgnoreCase(status)) return "badge-skipped";
-
-        long daysLeft = getDaysLeft();
-        if (daysLeft < 0) return "badge-overdue";
-        if (daysLeft <= 2) return "badge-today";
+        if (getDaysLeft() < 0) return "badge-overdue";
+        if (getDaysLeft() <= 2) return "badge-today";
         return "badge-upcoming";
     }
 }
