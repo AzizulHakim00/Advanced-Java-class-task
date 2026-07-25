@@ -31,7 +31,8 @@
         <div class="card"><div class="stat-label">Total Tasks</div><div class="stat-value" th:text="${totalCount}">0</div></div>
         <div class="card"><div class="stat-label">Pending</div><div class="stat-value" th:text="${pendingCount}">0</div></div>
         <div class="card"><div class="stat-label">In Progress</div><div class="stat-value" th:text="${inProgressCount}">0</div></div>
-        <div class="card"><div class="stat-label">Urgent Tasks</div><div class="stat-value" th:text="${urgentCount}">0</div></div>
+        <div class="card"><div class="stat-label">Due Soon</div><div class="stat-value" th:text="${urgentCount}">0</div></div>
+        <div class="card"><div class="stat-label">Overdue</div><div class="stat-value stat-danger" th:text="${overdueCount}">0</div></div>
     </section>
 
     <section class="section">
@@ -58,12 +59,13 @@
         </div>
 
         <table th:unless="${upcomingTasks.isEmpty()}">
-            <thead><tr><th>Task</th><th>Course</th><th>Deadline</th><th>Importance</th><th>Status</th></tr></thead>
+            <thead><tr><th>Task</th><th>Course</th><th>Deadline</th><th>Deadline Status</th><th>Importance</th><th>Status</th></tr></thead>
             <tbody>
             <tr th:each="task : ${upcomingTasks}">
                 <td th:text="${task.taskName}">Task</td>
                 <td th:text="${task.courseName}">Course</td>
                 <td th:text="${task.deadline}">2026-08-01</td>
+                <td><span class="badge" th:classappend="${' ' + task.deadlineBadgeClass}" th:text="${task.deadlineLabel}">Due today</span></td>
                 <td><span class="badge" th:classappend="${task.importance == 'High' ? ' badge-high' : (task.importance == 'Medium' ? ' badge-medium' : ' badge-low')}" th:text="${task.importance}">High</span></td>
                 <td th:text="${task.status}">Pending</td>
             </tr>
