@@ -1,1 +1,67 @@
-<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Print History</title><style>*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f4f7fb;color:#172033}.top{background:#0f3d66;color:#fff;padding:16px 7%;display:flex;justify-content:space-between}.top a{color:#fff;text-decoration:none;margin-left:12px}.page{width:min(1150px,92%);margin:28px auto}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.card,.section{background:#fff;border:1px solid #dde5ef;border-radius:14px;padding:20px}.label{color:#68768b;font-size:13px}.value{font-size:28px;font-weight:800;margin-top:7px}.section{margin-top:20px}.wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:12px;border-bottom:1px solid #e4eaf1;text-align:left}th{background:#eef6fa;color:#0f3d66}@media(max-width:750px){.cards{grid-template-columns:1fr 1fr}.top{flex-direction:column;gap:10px}}</style></head><body><header class="top"><strong>PrintPulse · Southeast University</strong><nav><a th:href="@{/printpulse/dashboard}">Dashboard</a><a th:href="@{/printpulse/requests}">Queue</a><a th:href="@{/printpulse/requests/add}">New Request</a></nav></header><main class="page"><h1>Completed Print History</h1><p>Southeast University Campus Print Service</p><section class="cards"><div class="card"><div class="label">Completed Orders</div><div class="value" th:text="${completedCount}">0</div></div><div class="card"><div class="label">Printed Pages</div><div class="value" th:text="${totalPrintedPages}">0</div></div><div class="card"><div class="label">Color Jobs</div><div class="value" th:text="${colorJobs}">0</div></div><div class="card"><div class="label">Total Revenue</div><div class="value" th:text="${'৳'+#numbers.formatDecimal(totalRevenue,1,2)}">৳0</div></div></section><section class="section"><h2>Collected Requests</h2><div class="wrap"><table><thead><tr><th>Queue</th><th>Student</th><th>Document</th><th>Pages</th><th>Type</th><th>Collected</th><th>Cost</th></tr></thead><tbody><tr th:each="item:${collectedRequests}"><td th:text="${'#'+item.requestId}">#1001</td><td><strong th:text="${item.studentName}">Name</strong><br><small th:text="${item.studentId}">ID</small></td><td th:text="${item.documentName}">Document</td><td th:text="${item.totalPrintedPages}">10</td><td th:text="${item.printType}">Color</td><td th:text="${item.collectedDate}">Date</td><td th:text="${'৳'+#numbers.formatDecimal(item.totalCost,1,2)}">৳0</td></tr><tr th:if="${collectedRequests.isEmpty()}"><td colspan="7" style="text-align:center;padding:30px">No collected print requests yet.</td></tr></tbody></table></div></section></main></body></html>
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print History</title>
+    <link rel="stylesheet" th:href="@{/css/printpulse.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="header-inner">
+        <a class="brand-wrap" th:href="@{/printpulse/dashboard}">
+            <span class="brand-mark">PP</span>
+            <span><span class="brand-name">Print<span>Pulse</span></span><small class="brand-subtitle">Southeast University</small></span>
+        </a>
+        <nav class="nav-links">
+            <a th:href="@{/printpulse/dashboard}">Dashboard</a>
+            <a th:href="@{/printpulse/requests}">Print Queue</a>
+            <a th:href="@{/printpulse/requests/add}">New Request</a>
+            <a class="active" th:href="@{/printpulse/history}">History</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page">
+    <div class="page-head">
+        <div>
+            <div class="eyebrow">Completed Operations</div>
+            <h1 class="page-title">Completed Print History</h1>
+            <p class="page-description">Review collected orders, total printed pages, color jobs, and printing revenue.</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/printpulse/requests}">Back to Queue</a>
+    </div>
+
+    <section class="summary-grid">
+        <article class="summary-card stat-blue"><div class="stat-label">Completed Orders</div><div class="stat-value" th:text="${completedCount}">0</div></article>
+        <article class="summary-card stat-cyan"><div class="stat-label">Printed Pages</div><div class="stat-value" th:text="${totalPrintedPages}">0</div></article>
+        <article class="summary-card stat-purple"><div class="stat-label">Color Jobs</div><div class="stat-value" th:text="${colorJobs}">0</div></article>
+        <article class="summary-card stat-green"><div class="stat-label">Total Revenue</div><div class="stat-value" th:text="${'৳' + #numbers.formatDecimal(totalRevenue,1,2)}">৳0</div></article>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <div><div class="eyebrow">Archive</div><h2>Collected Requests</h2><p>All successfully completed and collected print orders.</p></div>
+        </div>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead><tr><th>Queue</th><th>Student</th><th>Document</th><th>Pages</th><th>Type</th><th>Collected</th><th>Cost</th></tr></thead>
+                <tbody>
+                <tr th:each="item : ${collectedRequests}">
+                    <td class="queue-number" th:text="${'#' + item.requestId}">#1001</td>
+                    <td><span class="primary-text" th:text="${item.studentName}">Name</span><br><span class="secondary-text" th:text="${item.studentId}">ID</span></td>
+                    <td th:text="${item.documentName}">Document</td>
+                    <td th:text="${item.totalPrintedPages}">10</td>
+                    <td th:text="${item.printType}">Color</td>
+                    <td th:text="${item.collectedDate}">Date</td>
+                    <td class="money" th:text="${'৳' + #numbers.formatDecimal(item.totalCost,1,2)}">৳0</td>
+                </tr>
+                <tr th:if="${collectedRequests.isEmpty()}"><td colspan="7"><div class="empty-state"><span class="empty-icon">📚</span>No collected print requests yet.</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <p class="footer-note">PrintPulse · Southeast University Campus Print Service</p>
+</main>
+</body>
+</html>
