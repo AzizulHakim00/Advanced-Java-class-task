@@ -1,5 +1,9 @@
 package bd.edu.seu.classproject;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,48 +16,57 @@ import java.time.temporal.ChronoUnit;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "study_tasks")
 public class StudyTask {
 
+    @Id
     @NotNull(message = "Task ID is required")
     @Min(value = 1, message = "Task ID must be at least 1")
     private Integer taskId;
 
     @NotBlank(message = "Task name cannot be blank")
     @Size(min = 3, max = 100, message = "Task name must be between 3 and 100 characters")
+    @Column(nullable = false, length = 100)
     private String taskName;
 
     @NotBlank(message = "Course name cannot be blank")
     @Size(min = 2, max = 60, message = "Course name must be between 2 and 60 characters")
+    @Column(nullable = false, length = 60)
     private String courseName;
 
     @NotNull(message = "Deadline is required")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(nullable = false)
     private LocalDate deadline;
 
     @NotNull(message = "Estimated time is required")
     @Min(value = 10, message = "Estimated time must be at least 10 minutes")
     @Max(value = 600, message = "Estimated time cannot exceed 600 minutes")
+    @Column(nullable = false)
     private Integer estimatedMinutes;
 
     @NotBlank(message = "Difficulty is required")
     @Pattern(regexp = "Easy|Medium|Hard", message = "Select a valid difficulty")
+    @Column(nullable = false, length = 20)
     private String difficulty;
 
     @NotBlank(message = "Importance is required")
     @Pattern(regexp = "Low|Medium|High", message = "Select a valid importance")
+    @Column(nullable = false, length = 20)
     private String importance;
 
     @NotBlank(message = "Status is required")
     @Pattern(regexp = "Pending|In Progress|Completed|Skipped", message = "Select a valid status")
+    @Column(nullable = false, length = 30)
     private String status;
 
     @Size(max = 300, message = "Description cannot exceed 300 characters")
+    @Column(length = 300)
     private String description;
 
     public long getDaysLeft() {
-        if (deadline == null) {
-            return Long.MAX_VALUE;
-        }
+        if (deadline == null) return Long.MAX_VALUE;
         return ChronoUnit.DAYS.between(LocalDate.now(), deadline);
     }
 
