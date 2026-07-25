@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Data
 @NoArgsConstructor
@@ -48,4 +49,43 @@ public class StudyTask {
 
     @Size(max = 300, message = "Description cannot exceed 300 characters")
     private String description;
+
+    public long getDaysLeft() {
+        if (deadline == null) {
+            return Long.MAX_VALUE;
+        }
+        return ChronoUnit.DAYS.between(LocalDate.now(), deadline);
+    }
+
+    public boolean isOverdue() {
+        return deadline != null
+                && getDaysLeft() < 0
+                && !"Completed".equalsIgnoreCase(status)
+                && !"Skipped".equalsIgnoreCase(status);
+    }
+
+    public String getDeadlineLabel() {
+        if (deadline == null) return "No deadline";
+        if ("Completed".equalsIgnoreCase(status)) return "Completed";
+        if ("Skipped".equalsIgnoreCase(status)) return "Skipped";
+
+        long daysLeft = getDaysLeft();
+        if (daysLeft < 0) {
+            long overdueDays = Math.abs(daysLeft);
+            return overdueDays + (overdueDays == 1 ? " day overdue" : " days overdue");
+        }
+        if (daysLeft == 0) return "Due today";
+        if (daysLeft == 1) return "Due tomorrow";
+        return daysLeft + " days left";
+    }
+
+    public String getDeadlineBadgeClass() {
+        if ("Completed".equalsIgnoreCase(status)) return "badge-completed";
+        if ("Skipped".equalsIgnoreCase(status)) return "badge-skipped";
+
+        long daysLeft = getDaysLeft();
+        if (daysLeft < 0) return "badge-overdue";
+        if (daysLeft <= 2) return "badge-today";
+        return "badge-upcoming";
+    }
 }
