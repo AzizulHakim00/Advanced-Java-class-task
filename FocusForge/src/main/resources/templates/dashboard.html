@@ -1,75 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FocusForge Dashboard</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
-</head>
-<body>
-<nav class="navbar">
-    <div class="brand">Focus<span>Forge</span></div>
-    <div class="nav-links">
-        <a th:href="@{/focusforge/dashboard}">Dashboard</a>
-        <a th:href="@{/focusforge/tasks}">Tasks</a>
-        <a th:href="@{/focusforge/tasks/add}">Add Task</a>
-        <a th:href="@{/focusforge/check-in}">Smart Check-in</a>
-    </div>
-</nav>
-
-<main class="page">
-    <section class="hero">
-        <h1>Smart Study Decision Assistant</h1>
-        <p>FocusForge helps you choose the best study task using your available time, energy, mood, deadline, difficulty and importance.</p>
-        <div class="actions" style="margin-top:18px">
-            <a class="btn btn-success" th:href="@{/focusforge/check-in}">Find My Best Task</a>
-            <a class="btn btn-primary" th:href="@{/focusforge/tasks/add}">+ Add New Task</a>
-        </div>
-    </section>
-
-    <section class="grid">
-        <div class="card"><div class="stat-label">Total Tasks</div><div class="stat-value" th:text="${totalCount}">0</div></div>
-        <div class="card"><div class="stat-label">Pending</div><div class="stat-value" th:text="${pendingCount}">0</div></div>
-        <div class="card"><div class="stat-label">In Progress</div><div class="stat-value" th:text="${inProgressCount}">0</div></div>
-        <div class="card"><div class="stat-label">Urgent Tasks</div><div class="stat-value" th:text="${urgentCount}">0</div></div>
-    </section>
-
-    <section class="section">
-        <div class="section-head">
-            <div>
-                <h2>Productivity Score</h2>
-                <p style="color:#64748b;margin-bottom:8px">Completed <span th:text="${completedCount}">0</span> of <span th:text="${totalCount}">0</span> tasks</p>
-            </div>
-            <strong th:text="${productivityScore + '%'}">0%</strong>
-        </div>
-        <div class="progress-track">
-            <div class="progress-bar" th:style="'width:' + ${productivityScore} + '%'" style="width:0"></div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="section-head">
-            <h2>Upcoming Tasks</h2>
-            <a class="btn btn-primary" th:href="@{/focusforge/tasks}">View All</a>
-        </div>
-
-        <div class="empty" th:if="${upcomingTasks.isEmpty()}">
-            No active tasks yet. Add a task to begin.
-        </div>
-
-        <table th:unless="${upcomingTasks.isEmpty()}">
-            <thead><tr><th>Task</th><th>Course</th><th>Deadline</th><th>Importance</th><th>Status</th></tr></thead>
-            <tbody>
-            <tr th:each="task : ${upcomingTasks}">
-                <td th:text="${task.taskName}">Task</td>
-                <td th:text="${task.courseName}">Course</td>
-                <td th:text="${task.deadline}">2026-08-01</td>
-                <td><span class="badge" th:classappend="${task.importance == 'High' ? ' badge-high' : (task.importance == 'Medium' ? ' badge-medium' : ' badge-low')}" th:text="${task.importance}">High</span></td>
-                <td th:text="${task.status}">Pending</td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-</main>
-</body>
-</html>
+<!DOCTYPE html><html lang="en" xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FocusForge Dashboard</title><link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="navbar"><div class="brand">🎓 Focus<span>Forge</span></div><div class="nav-links"><a th:href="@{/focusforge/dashboard}">Dashboard</a><a th:href="@{/focusforge/tasks}">Tasks</a><a th:href="@{/focusforge/check-in}">Check-in</a><a th:href="@{/focusforge/history}">History</a></div><div class="tagline">Focus Smarter, Achieve More!</div></nav>
+<main class="page"><div class="page-title"><div><h1>Welcome back, Azizul! 👋</h1><p class="muted">Plan better. Focus better. Achieve more.</p></div><div class="date-pill" th:text="${today}">Saturday, 24 May 2025</div></div>
+<section class="stat-grid"><div class="stat-card purple"><h4>Total Tasks</h4><strong th:text="${totalCount}">0</strong><p>All study tasks</p></div><div class="stat-card blue"><h4>Pending Tasks</h4><strong th:text="${pendingCount + inProgressCount}">0</strong><p>Need attention</p></div><div class="stat-card orange"><h4>Urgent Tasks</h4><strong th:text="${urgentCount}">0</strong><p>Due within 2 days</p></div><div class="stat-card green"><h4>Completed Tasks</h4><strong th:text="${completedCount}">0</strong><p>Great progress!</p></div><div class="stat-card red"><h4>Overdue Tasks</h4><strong th:text="${overdueCount}">0</strong><p>Past the deadline</p></div></section>
+<section class="dashboard-grid"><div class="panel"><h3>Productivity Score</h3><div class="progress-ring" th:style="'--value:' + ${productivityScore} + '%' "><div class="inside"><strong th:text="${productivityScore + '%'}">0%</strong><span class="small">Keep it up!</span></div></div></div>
+<div class="panel"><h3>Recommended Next Task</h3><div class="recommend-card" th:if="${dashboardRecommendation != null}"><h3 th:text="${dashboardRecommendation.task.taskName}">Task</h3><div class="badges"><span class="badge" th:classappend="${dashboardRecommendation.task.difficulty == 'Hard' ? ' badge-hard' : (dashboardRecommendation.task.difficulty == 'Medium' ? ' badge-medium' : ' badge-easy')}" th:text="${dashboardRecommendation.task.difficulty}">Medium</span><span class="badge" th:classappend="${dashboardRecommendation.task.importance == 'High' ? ' badge-high' : (dashboardRecommendation.task.importance == 'Medium' ? ' badge-medium' : ' badge-low')}" th:text="${dashboardRecommendation.task.importance}">High</span></div><p><b>Deadline:</b> <span th:text="${dashboardRecommendation.task.deadlineLabel}"></span></p><p><b>Estimated time:</b> <span th:text="${dashboardRecommendation.task.estimatedMinutes + ' minutes'}"></span></p><p class="muted small" th:text="${dashboardRecommendation.reasons[0]}"></p><a class="btn btn-blue" th:href="@{/focusforge/check-in}">Get Recommendation</a></div><div class="empty" th:if="${dashboardRecommendation == null}">Add an active task to receive a recommendation.</div></div>
+<div class="panel"><h3>Task Overview</h3><div class="pie" th:style="'--completed:' + ${completedPercent} + '%;--pending:' + ${pendingPercent} + '%' "></div><div class="legend"><span class="lg-green" th:text="${'Completed (' + completedCount + ')'}"></span><span class="lg-blue" th:text="${'Pending (' + (pendingCount + inProgressCount) + ')'}"></span><span class="lg-red" th:text="${'Overdue (' + overdueCount + ')'}"></span></div></div></section>
+<section class="panel section-gap"><div class="toolbar"><div><h3>Upcoming Tasks</h3><p class="muted small">Your nearest active deadlines</p></div><a class="btn btn-blue" th:href="@{/focusforge/tasks}">View All Tasks</a></div><div class="empty" th:if="${upcomingTasks.isEmpty()}">No active tasks yet.</div><div class="table-wrapper" th:unless="${upcomingTasks.isEmpty()}"><table><thead><tr><th>Task</th><th>Course</th><th>Deadline</th><th>Importance</th><th>Status</th></tr></thead><tbody><tr th:each="task : ${upcomingTasks}"><td><b th:text="${task.taskName}"></b></td><td th:text="${task.courseName}"></td><td><span class="badge" th:classappend="${' ' + task.deadlineBadgeClass}" th:text="${task.deadlineLabel}"></span></td><td><span class="badge" th:classappend="${task.importance == 'High' ? ' badge-high' : (task.importance == 'Medium' ? ' badge-medium' : ' badge-low')}" th:text="${task.importance}"></span></td><td th:text="${task.status}"></td></tr></tbody></table></div></section></main></body></html>
