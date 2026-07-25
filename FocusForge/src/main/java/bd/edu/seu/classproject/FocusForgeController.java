@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @Slf4j
@@ -22,7 +20,7 @@ import java.util.Objects;
 public class FocusForgeController {
 
     private final RecommendationService recommendationService;
-    private final List<StudyTask> tasks = new ArrayList<>();
+    private final StudyTaskInterface studyTaskInterface;
 
     @ModelAttribute("difficulties")
     public List<String> difficulties() {
@@ -46,6 +44,8 @@ public class FocusForgeController {
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
+        List<StudyTask> tasks = studyTaskInterface.findAll();
+
         long pendingCount = tasks.stream()
                 .filter(task -> "Pending".equalsIgnoreCase(task.getStatus()))
                 .count();
@@ -101,6 +101,7 @@ public class FocusForgeController {
         model.addAttribute("name", "Add Study Task");
         model.addAttribute("task", task);
         model.addAttribute("editMode", false);
+
         return "task-form";
     }
 
@@ -108,10 +109,8 @@ public class FocusForgeController {
     public String addTask(@Valid @ModelAttribute("task") StudyTask task,
                           BindingResult bindingResult,
                           Model model) {
-        boolean duplicateId = tasks.stream()
-                .anyMatch(existing -> Objects.equals(existing.getTaskId(), task.getTaskId()));
 
-        if (duplicateId) {
+        if (task.getTaskId() != null && studyTaskInterface.existsById(task.getTaskId())) {
             bindingResult.rejectValue("taskId", "duplicate.taskId", "This Task ID already exists");
         }
 
@@ -121,8 +120,9 @@ public class FocusForgeController {
             return "task-form";
         }
 
-        tasks.add(task);
-        log.info("Study task added: {}", task);
+        studyTaskInterface.save(task);
+        log.info("Study task saved in MySQL: {}", task);
+
         return "redirect:/focusforge/tasks";
     }
 
@@ -131,10 +131,12 @@ public class FocusForgeController {
                                @RequestParam(required = false) String status,
                                @RequestParam(required = false) String importance,
                                Model model) {
-        List<StudyTask> filteredTasks = tasks.stream()
+
+        List<StudyTask> filteredTasks = studyTaskInterface.findAll().stream()
                 .filter(task -> {
                     boolean keywordMatch = keyword == null
                             || keyword.isBlank()
+                            || task.getTaskId().toString().contains(keyword)
                             || task.getTaskName().toLowerCase().contains(keyword.toLowerCase())
                             || task.getCourseName().toLowerCase().contains(keyword.toLowerCase());
 
@@ -155,18 +157,23 @@ public class FocusForgeController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedImportance", importance);
+
         return "task-list";
     }
 
     @GetMapping("/tasks/edit/{taskId}")
     public String showEditForm(@PathVariable Integer taskId, Model model) {
-        StudyTask existingTask = findTask(taskId);
-        if (existingTask == null) return "redirect:/focusforge/tasks";
+        StudyTask existingTask = studyTaskInterface.findById(taskId).orElse(null);
+
+        if (existingTask == null) {
+            return "redirect:/focusforge/tasks";
+        }
 
         model.addAttribute("name", "Edit Study Task");
         model.addAttribute("task", existingTask);
         model.addAttribute("editMode", true);
         model.addAttribute("originalTaskId", taskId);
+
         return "task-form";
     }
 
@@ -175,6 +182,7 @@ public class FocusForgeController {
                              @Valid @ModelAttribute("task") StudyTask task,
                              BindingResult bindingResult,
                              Model model) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("name", "Edit Study Task");
             model.addAttribute("editMode", true);
@@ -182,42 +190,51 @@ public class FocusForgeController {
             return "task-form";
         }
 
-        for (int i = 0; i < tasks.size(); i++) {
-            if (Objects.equals(tasks.get(i).getTaskId(), taskId)) {
-                task.setTaskId(taskId);
-                tasks.set(i, task);
-                log.info("Study task updated: {}", task);
-                break;
-            }
+        if (!studyTaskInterface.existsById(taskId)) {
+            return "redirect:/focusforge/tasks";
         }
+
+        task.setTaskId(taskId);
+        studyTaskInterface.save(task);
+        log.info("Study task updated in MySQL: {}", task);
+
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/delete/{taskId}")
     public String deleteTask(@PathVariable Integer taskId) {
-        tasks.removeIf(task -> Objects.equals(task.getTaskId(), taskId));
-        log.info("Study task deleted. Task ID: {}", taskId);
+        if (studyTaskInterface.existsById(taskId)) {
+            studyTaskInterface.deleteById(taskId);
+            log.info("Study task deleted from MySQL. Task ID: {}", taskId);
+        }
+
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/status/{taskId}")
     public String updateTaskStatus(@PathVariable Integer taskId,
                                    @RequestParam String value) {
-        StudyTask task = findTask(taskId);
+        StudyTask task = studyTaskInterface.findById(taskId).orElse(null);
+
         if (task != null && statuses().contains(value)) {
             task.setStatus(value);
-            log.info("Study task status updated. Task ID: {}, Status: {}", taskId, value);
+            studyTaskInterface.save(task);
+            log.info("Study task status updated in MySQL. Task ID: {}, Status: {}", taskId, value);
         }
+
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/complete/{taskId}")
     public String completeTask(@PathVariable Integer taskId) {
-        StudyTask task = findTask(taskId);
+        StudyTask task = studyTaskInterface.findById(taskId).orElse(null);
+
         if (task != null) {
             task.setStatus("Completed");
-            log.info("Study task completed. Task ID: {}", taskId);
+            studyTaskInterface.save(task);
+            log.info("Study task completed in MySQL. Task ID: {}", taskId);
         }
+
         return "redirect:/focusforge/tasks";
     }
 
@@ -227,6 +244,7 @@ public class FocusForgeController {
         checkIn.setAvailableMinutes(45);
         checkIn.setEnergyLevel("Medium");
         checkIn.setMood("Normal");
+
         model.addAttribute("checkIn", checkIn);
         return "check-in";
     }
@@ -235,24 +253,23 @@ public class FocusForgeController {
     public String recommendTask(@Valid @ModelAttribute("checkIn") StudyCheckIn checkIn,
                                 BindingResult bindingResult,
                                 Model model) {
-        if (bindingResult.hasErrors()) return "check-in";
 
+        if (bindingResult.hasErrors()) {
+            return "check-in";
+        }
+
+        List<StudyTask> tasks = studyTaskInterface.findAll();
         RecommendationResult result = recommendationService.recommend(tasks, checkIn);
+
         model.addAttribute("checkIn", checkIn);
         model.addAttribute("result", result);
         model.addAttribute("hasRecommendation", result != null);
+
         return "recommendation";
     }
 
     @GetMapping("/recommendation/complete/{taskId}")
     public String completeRecommendedTask(@PathVariable Integer taskId) {
         return completeTask(taskId);
-    }
-
-    private StudyTask findTask(Integer taskId) {
-        return tasks.stream()
-                .filter(task -> Objects.equals(task.getTaskId(), taskId))
-                .findFirst()
-                .orElse(null);
     }
 }
