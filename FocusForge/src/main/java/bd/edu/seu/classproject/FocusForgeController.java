@@ -46,7 +46,6 @@ public class FocusForgeController {
 
     @GetMapping("/dashboard")
     public String showDashboard(Model model) {
-
         long pendingCount = tasks.stream()
                 .filter(task -> "Pending".equalsIgnoreCase(task.getStatus()))
                 .count();
@@ -62,10 +61,11 @@ public class FocusForgeController {
         long urgentCount = tasks.stream()
                 .filter(task -> !"Completed".equalsIgnoreCase(task.getStatus()))
                 .filter(task -> !"Skipped".equalsIgnoreCase(task.getStatus()))
-                .filter(task -> {
-                    long days = ChronoUnit.DAYS.between(LocalDate.now(), task.getDeadline());
-                    return days <= 2;
-                })
+                .filter(task -> ChronoUnit.DAYS.between(LocalDate.now(), task.getDeadline()) <= 2)
+                .count();
+
+        long overdueCount = tasks.stream()
+                .filter(StudyTask::isOverdue)
                 .count();
 
         int productivityScore = tasks.isEmpty()
@@ -84,6 +84,7 @@ public class FocusForgeController {
         model.addAttribute("inProgressCount", inProgressCount);
         model.addAttribute("completedCount", completedCount);
         model.addAttribute("urgentCount", urgentCount);
+        model.addAttribute("overdueCount", overdueCount);
         model.addAttribute("productivityScore", productivityScore);
         model.addAttribute("upcomingTasks", upcomingTasks);
 
@@ -92,7 +93,6 @@ public class FocusForgeController {
 
     @GetMapping("/tasks/add")
     public String showTaskForm(Model model) {
-
         StudyTask task = new StudyTask();
         task.setStatus("Pending");
         task.setDifficulty("Medium");
@@ -101,16 +101,13 @@ public class FocusForgeController {
         model.addAttribute("name", "Add Study Task");
         model.addAttribute("task", task);
         model.addAttribute("editMode", false);
-
         return "task-form";
     }
 
     @PostMapping("/tasks/add")
-    public String addTask(
-            @Valid @ModelAttribute("task") StudyTask task,
-            BindingResult bindingResult,
-            Model model) {
-
+    public String addTask(@Valid @ModelAttribute("task") StudyTask task,
+                          BindingResult bindingResult,
+                          Model model) {
         boolean duplicateId = tasks.stream()
                 .anyMatch(existing -> Objects.equals(existing.getTaskId(), task.getTaskId()));
 
@@ -126,17 +123,14 @@ public class FocusForgeController {
 
         tasks.add(task);
         log.info("Study task added: {}", task);
-
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks")
-    public String showTaskList(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String importance,
-            Model model) {
-
+    public String showTaskList(@RequestParam(required = false) String keyword,
+                               @RequestParam(required = false) String status,
+                               @RequestParam(required = false) String importance,
+                               Model model) {
         List<StudyTask> filteredTasks = tasks.stream()
                 .filter(task -> {
                     boolean keywordMatch = keyword == null
@@ -161,34 +155,26 @@ public class FocusForgeController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedImportance", importance);
-
         return "task-list";
     }
 
     @GetMapping("/tasks/edit/{taskId}")
     public String showEditForm(@PathVariable Integer taskId, Model model) {
-
         StudyTask existingTask = findTask(taskId);
-
-        if (existingTask == null) {
-            return "redirect:/focusforge/tasks";
-        }
+        if (existingTask == null) return "redirect:/focusforge/tasks";
 
         model.addAttribute("name", "Edit Study Task");
         model.addAttribute("task", existingTask);
         model.addAttribute("editMode", true);
         model.addAttribute("originalTaskId", taskId);
-
         return "task-form";
     }
 
     @PostMapping("/tasks/edit/{taskId}")
-    public String updateTask(
-            @PathVariable Integer taskId,
-            @Valid @ModelAttribute("task") StudyTask task,
-            BindingResult bindingResult,
-            Model model) {
-
+    public String updateTask(@PathVariable Integer taskId,
+                             @Valid @ModelAttribute("task") StudyTask task,
+                             BindingResult bindingResult,
+                             Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("name", "Edit Study Task");
             model.addAttribute("editMode", true);
@@ -204,59 +190,57 @@ public class FocusForgeController {
                 break;
             }
         }
-
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/delete/{taskId}")
     public String deleteTask(@PathVariable Integer taskId) {
-
         tasks.removeIf(task -> Objects.equals(task.getTaskId(), taskId));
         log.info("Study task deleted. Task ID: {}", taskId);
+        return "redirect:/focusforge/tasks";
+    }
 
+    @GetMapping("/tasks/status/{taskId}")
+    public String updateTaskStatus(@PathVariable Integer taskId,
+                                   @RequestParam String value) {
+        StudyTask task = findTask(taskId);
+        if (task != null && statuses().contains(value)) {
+            task.setStatus(value);
+            log.info("Study task status updated. Task ID: {}, Status: {}", taskId, value);
+        }
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/complete/{taskId}")
     public String completeTask(@PathVariable Integer taskId) {
-
         StudyTask task = findTask(taskId);
         if (task != null) {
             task.setStatus("Completed");
             log.info("Study task completed. Task ID: {}", taskId);
         }
-
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/check-in")
     public String showCheckIn(Model model) {
-
         StudyCheckIn checkIn = new StudyCheckIn();
         checkIn.setAvailableMinutes(45);
         checkIn.setEnergyLevel("Medium");
         checkIn.setMood("Normal");
-
         model.addAttribute("checkIn", checkIn);
         return "check-in";
     }
 
     @PostMapping("/recommend")
-    public String recommendTask(
-            @Valid @ModelAttribute("checkIn") StudyCheckIn checkIn,
-            BindingResult bindingResult,
-            Model model) {
-
-        if (bindingResult.hasErrors()) {
-            return "check-in";
-        }
+    public String recommendTask(@Valid @ModelAttribute("checkIn") StudyCheckIn checkIn,
+                                BindingResult bindingResult,
+                                Model model) {
+        if (bindingResult.hasErrors()) return "check-in";
 
         RecommendationResult result = recommendationService.recommend(tasks, checkIn);
-
         model.addAttribute("checkIn", checkIn);
         model.addAttribute("result", result);
         model.addAttribute("hasRecommendation", result != null);
-
         return "recommendation";
     }
 
