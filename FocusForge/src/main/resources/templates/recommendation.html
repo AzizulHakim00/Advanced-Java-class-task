@@ -25,13 +25,21 @@
                 <h1 style="margin:0" th:text="${result.task.taskName}">Recommended Task</h1>
                 <p style="color:#64748b" th:text="${result.task.courseName}">Course</p>
             </div>
-            <div class="score" th:text="${result.score}">95</div>
+            <div class="match-box">
+                <div class="score" th:text="${result.matchPercentage + '%'}">85%</div>
+                <strong th:text="${result.matchLabel}">Strong Match</strong>
+                <small th:text="${'Rule score: ' + result.score}">Rule score: 95</small>
+            </div>
         </div>
 
         <div class="grid" style="grid-template-columns:repeat(3,1fr)">
             <div class="card"><div class="stat-label">Estimated Time</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.estimatedMinutes + ' min'}">45 min</div></div>
             <div class="card"><div class="stat-label">Difficulty</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.difficulty}">Medium</div></div>
-            <div class="card"><div class="stat-label">Deadline</div><div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.deadline}">2026-08-01</div></div>
+            <div class="card">
+                <div class="stat-label">Deadline</div>
+                <div style="font-size:21px;font-weight:800;margin-top:7px" th:text="${result.task.deadline}">2026-08-01</div>
+                <span class="badge deadline-badge" th:classappend="${' ' + result.task.deadlineBadgeClass}" th:text="${result.task.deadlineLabel}">Due today</span>
+            </div>
         </div>
 
         <h2>Why this task?</h2>
@@ -45,6 +53,7 @@
         </div>
 
         <div class="actions" style="margin-top:20px">
+            <a class="btn btn-amber" th:if="${result.task.status == 'Pending'}" th:href="@{/focusforge/tasks/status/{id}(id=${result.task.taskId},value='In Progress')}">Start This Task</a>
             <a class="btn btn-success" th:href="@{/focusforge/recommendation/complete/{id}(id=${result.task.taskId})}">Mark Completed</a>
             <a class="btn btn-primary" th:href="@{/focusforge/tasks/edit/{id}(id=${result.task.taskId})}">Update Task</a>
             <a class="btn btn-amber" th:href="@{/focusforge/check-in}">Check Again</a>
