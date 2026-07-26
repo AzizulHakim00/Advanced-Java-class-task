@@ -1,27 +1,36 @@
 package bd.edu.seu.product_shop;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-
-@Table(name="Student_data")
-
+@Table(name = "Student_data")
 public class Student {
 
     @Id
-    int id ;
+    int id;
 
     String name;
 
-    @Column(name = "my_gpa" )
+    @Column(name = "mygpa")
     double gpa;
+
+    @Embedded
+    private Address address;
+
+    @ElementCollection
+    private List<String> mobileNumbeers;
+
+
+    @Embedded
+    @OneToOne
+    private Guardian guardian;
+
 }

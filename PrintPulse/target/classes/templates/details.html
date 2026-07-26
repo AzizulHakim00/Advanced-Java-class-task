@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Details</title>
+    <link rel="stylesheet" th:href="@{/css/printpulse.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="header-inner">
+        <a class="brand-wrap" th:href="@{/printpulse/dashboard}">
+            <span class="brand-mark">PP</span>
+            <span><span class="brand-name">Print<span>Pulse</span></span><small class="brand-subtitle">Southeast University</small></span>
+        </a>
+        <nav class="nav-links">
+            <a th:href="@{/printpulse/dashboard}">Dashboard</a>
+            <a class="active" th:href="@{/printpulse/requests}">Print Queue</a>
+            <a th:href="@{/printpulse/requests/add}">New Request</a>
+            <a th:href="@{/printpulse/history}">History</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page medium">
+    <section class="ticket">
+        <div class="ticket-header">
+            <div><div class="eyebrow" style="color:#8ce8f3">Request Summary</div><h1>Print Request Details</h1><p>Southeast University Campus Print Service</p></div>
+            <div class="ticket-number" th:text="${'#' + printRequest.requestId}">#1001</div>
+        </div>
+        <div class="ticket-body">
+            <div class="detail-grid">
+                <div class="detail-item"><span class="detail-label">Student</span><span class="detail-value" th:text="${printRequest.studentName}">Name</span><span class="secondary-text" th:text="${printRequest.studentId}">ID</span></div>
+                <div class="detail-item"><span class="detail-label">Document</span><span class="detail-value" th:text="${printRequest.documentName}">Document</span><span class="secondary-text" th:text="${printRequest.requestDate}">Date</span></div>
+                <div class="detail-item"><span class="detail-label">Print Setup</span><span class="detail-value" th:text="${printRequest.printType + ' • ' + printRequest.paperSize}">Type</span><span class="secondary-text" th:text="${printRequest.totalPages + ' pages × ' + printRequest.copies + ' copies'}">Pages</span></div>
+                <div class="detail-item"><span class="detail-label">Status</span><span class="detail-value"><span class="badge" th:classappend="${' ' + printRequest.statusClass}" th:text="${printRequest.status}">Waiting</span></span><span class="secondary-text" th:text="${printRequest.collectedDate != null ? 'Collected: ' + printRequest.collectedDate : 'Not collected yet'}"></span></div>
+                <div class="detail-item full"><span class="detail-label">Notes</span><span class="detail-value" th:text="${#strings.isEmpty(printRequest.notes) ? 'No special notes' : printRequest.notes}">Notes</span></div>
+            </div>
+
+            <div class="total-banner"><span>Total Printing Cost</span><strong th:text="${'৳' + #numbers.formatDecimal(printRequest.totalCost,1,2)}">৳0</strong></div>
+
+            <div class="form-actions">
+                <a class="btn btn-primary" th:href="@{/printpulse/requests/edit/{id}(id=${printRequest.requestId})}">Edit Request</a>
+                <a class="btn btn-light" th:href="@{/printpulse/requests}">Back to Queue</a>
+            </div>
+        </div>
+    </section>
+    <p class="footer-note">PrintPulse · Southeast University Campus Print Service</p>
+</main>
+</body>
+</html>

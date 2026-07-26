@@ -16,11 +16,11 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    private final ProductInterface productInterface;
+    private final ProuductService prouductService;
 
     /// dip ///
-//    public ProductController(ProductInterface productInterface) {
-//        this.productInterface = productInterface;
+//    public ProductController(ProuductService prouductService) {
+//        this.prouductService = prouductService;
 //    }
 
     @GetMapping("/add")
@@ -46,7 +46,7 @@ public class ProductController {
             return "form";
         }
 
-        productInterface.save(product);
+        prouductService.saveProduct(product);
 
         log.info("Product added: {}", product);
 
@@ -59,7 +59,7 @@ public class ProductController {
             @RequestParam(required = false) String category,
             Model model) {
 
-        List<Product> products = productInterface.findAll();
+        List<Product> products = prouductService.getAll();
 
         List<Product> filteredProducts = products.stream()
                 .filter(product -> {
@@ -92,8 +92,7 @@ public class ProductController {
             @PathVariable Integer id,
             Model model) {
 
-        Product existingProduct = productInterface.findById(id)
-                .orElse(null);
+        Product existingProduct = prouductService.getById(id);
 
         if (existingProduct == null) {
             return "redirect:/product/list";
@@ -122,8 +121,7 @@ public class ProductController {
             return "form";
         }
 
-        Product existingProduct = productInterface.findById(id)
-                .orElse(null);
+        Product existingProduct = prouductService.getById(id);
 
         if (existingProduct == null) {
             return "redirect:/product/list";
@@ -131,7 +129,7 @@ public class ProductController {
 
         product.setId(id);
 
-        productInterface.save(product);
+        prouductService.saveProduct(product);
 
         log.info("Product updated: {}", product);
 
@@ -141,8 +139,10 @@ public class ProductController {
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
 
-        if (productInterface.existsById(id)) {
-            productInterface.deleteById(id);
+        Product existingProduct = prouductService.getById(id);
+
+        if (existingProduct != null) {
+            prouductService.deleteById(id);
 
             log.info("Product deleted. ID: {}", id);
         }

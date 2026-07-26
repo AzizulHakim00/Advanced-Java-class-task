@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${name}">Print Request</title>
+    <link rel="stylesheet" th:href="@{/css/printpulse.css}">
+</head>
+<body>
+<header class="app-header">
+    <div class="header-inner">
+        <a class="brand-wrap" th:href="@{/printpulse/dashboard}">
+            <span class="brand-mark">PP</span>
+            <span><span class="brand-name">Print<span>Pulse</span></span><small class="brand-subtitle">Southeast University</small></span>
+        </a>
+        <nav class="nav-links">
+            <a th:href="@{/printpulse/dashboard}">Dashboard</a>
+            <a th:href="@{/printpulse/requests}">Print Queue</a>
+            <a class="active" th:href="@{/printpulse/requests/add}">New Request</a>
+            <a th:href="@{/printpulse/history}">History</a>
+        </nav>
+    </div>
+</header>
+
+<main class="page narrow">
+    <section class="form-card">
+        <div class="form-header">
+            <div class="eyebrow">Campus Print Request</div>
+            <h1 th:text="${name}">New Print Request</h1>
+            <p>Enter the student and document information. Printing cost will be calculated automatically by the system.</p>
+        </div>
+
+        <form method="post"
+              th:action="${editMode} ? @{/printpulse/requests/edit/{id}(id=${originalId})} : @{/printpulse/requests/add}"
+              th:object="${printRequest}">
+            <div class="form-grid">
+                <div class="form-field">
+                    <label class="required">Request ID</label>
+                    <input type="number" th:field="*{requestId}" th:readonly="${editMode}" placeholder="Example: 1001">
+                    <span class="error" th:errors="*{requestId}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Student ID</label>
+                    <input th:field="*{studentId}" placeholder="Southeast University ID">
+                    <span class="error" th:errors="*{studentId}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Student Name</label>
+                    <input th:field="*{studentName}" placeholder="Full student name">
+                    <span class="error" th:errors="*{studentName}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Document Name</label>
+                    <input th:field="*{documentName}" placeholder="Example: Database Lab Report.pdf">
+                    <span class="error" th:errors="*{documentName}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Total Pages</label>
+                    <input type="number" th:field="*{totalPages}" placeholder="Number of pages">
+                    <span class="error" th:errors="*{totalPages}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Copies</label>
+                    <input type="number" th:field="*{copies}" placeholder="Number of copies">
+                    <span class="error" th:errors="*{copies}"></span>
+                </div>
+                <div class="form-field">
+                    <label class="required">Print Type</label>
+                    <select th:field="*{printType}">
+                        <option th:each="x : ${printTypes}" th:value="${x}" th:text="${x}"></option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="required">Paper Size</label>
+                    <select th:field="*{paperSize}">
+                        <option th:each="x : ${paperSizes}" th:value="${x}" th:text="${x}"></option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="required">Status</label>
+                    <select th:field="*{status}">
+                        <option th:each="x : ${statuses}" th:value="${x}" th:text="${x}"></option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label class="required">Request Date</label>
+                    <input type="date" th:field="*{requestDate}">
+                </div>
+                <div class="form-field full">
+                    <label>Notes</label>
+                    <textarea th:field="*{notes}" placeholder="Optional printing instructions or notes"></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-success" type="submit" th:text="${editMode} ? 'Update Request' : 'Save Request'">Save Request</button>
+                <a class="btn btn-light" th:href="@{/printpulse/requests}">Back to Queue</a>
+            </div>
+        </form>
+    </section>
+    <p class="footer-note">PrintPulse · Southeast University Campus Print Service</p>
+</main>
+</body>
+</html>
