@@ -52,8 +52,8 @@ public class FocusForgeController {
     public String showDashboard(Model model) {
         List<StudyTask> tasks = studyTaskService.getAllTasks();
 
-        long pendingCount = studyTaskService.countByStatus(tasks, "Pending");
-        long inProgressCount = studyTaskService.countByStatus(tasks, "In Progress");
+        long pendingCount = studyTaskService.countOpenByStatus(tasks, "Pending");
+        long inProgressCount = studyTaskService.countOpenByStatus(tasks, "In Progress");
         long completedCount = studyTaskService.countByStatus(tasks, "Completed");
         long urgentCount = studyTaskService.countUrgent(tasks);
         long overdueCount = studyTaskService.countOverdue(tasks);
@@ -61,10 +61,13 @@ public class FocusForgeController {
         RecommendationResult dashboardRecommendation = recommendationService.recommend(
                 tasks, createDefaultCheckIn(90));
 
-        int completedPercent = studyTaskService.percentage(completedCount, tasks.size());
+        long chartTotal = completedCount + pendingCount + inProgressCount + overdueCount;
+        int completedPercent = studyTaskService.percentage(completedCount, chartTotal);
         int pendingPercent = studyTaskService.percentage(
-                pendingCount + inProgressCount, tasks.size());
-        int overduePercent = Math.max(0, 100 - completedPercent - pendingPercent);
+                pendingCount + inProgressCount, chartTotal);
+        int overduePercent = chartTotal == 0
+                ? 0
+                : Math.max(0, 100 - completedPercent - pendingPercent);
 
         model.addAttribute("today", LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy")));
