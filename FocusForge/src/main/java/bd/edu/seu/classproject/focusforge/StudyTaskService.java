@@ -93,6 +93,15 @@ public class StudyTaskService {
                 .count();
     }
 
+    public long countOpenByStatus(List<StudyTask> tasks, String status) {
+        if (tasks == null || status == null) return 0;
+        return tasks.stream()
+                .filter(Objects::nonNull)
+                .filter(task -> status.equalsIgnoreCase(task.getStatus()))
+                .filter(task -> !task.isOverdue())
+                .count();
+    }
+
     public long countUrgent(List<StudyTask> tasks) {
         if (tasks == null) return 0;
         return tasks.stream()
