@@ -1,21 +1,20 @@
-package bd.edu.seu.classproject;
+package bd.edu.seu.classproject.focusforge;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "study_tasks")
 public class StudyTask {
@@ -71,9 +70,47 @@ public class StudyTask {
     @Column(name = "completed_date")
     private LocalDate completedDate;
 
+    public StudyTask() {
+    }
+
+    public StudyTask(Integer taskId, String taskName, String courseName, LocalDate deadline,
+                     Integer estimatedMinutes, String difficulty, String importance,
+                     String status, String description, LocalDate completedDate) {
+        this.taskId = taskId;
+        this.taskName = taskName;
+        this.courseName = courseName;
+        this.deadline = deadline;
+        this.estimatedMinutes = estimatedMinutes;
+        this.difficulty = difficulty;
+        this.importance = importance;
+        this.status = status;
+        this.description = description;
+        this.completedDate = completedDate;
+    }
+
+    public Integer getTaskId() { return taskId; }
+    public void setTaskId(Integer taskId) { this.taskId = taskId; }
+    public String getTaskName() { return taskName; }
+    public void setTaskName(String taskName) { this.taskName = taskName; }
+    public String getCourseName() { return courseName; }
+    public void setCourseName(String courseName) { this.courseName = courseName; }
+    public LocalDate getDeadline() { return deadline; }
+    public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
+    public Integer getEstimatedMinutes() { return estimatedMinutes; }
+    public void setEstimatedMinutes(Integer estimatedMinutes) { this.estimatedMinutes = estimatedMinutes; }
+    public String getDifficulty() { return difficulty; }
+    public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
+    public String getImportance() { return importance; }
+    public void setImportance(String importance) { this.importance = importance; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+    public LocalDate getCompletedDate() { return completedDate; }
+    public void setCompletedDate(LocalDate completedDate) { this.completedDate = completedDate; }
+
     public long getDaysLeft() {
-        if (deadline == null) return Long.MAX_VALUE;
-        return ChronoUnit.DAYS.between(LocalDate.now(), deadline);
+        return deadline == null ? Long.MAX_VALUE : ChronoUnit.DAYS.between(LocalDate.now(), deadline);
     }
 
     public boolean isOverdue() {
@@ -104,5 +141,16 @@ public class StudyTask {
         if (getDaysLeft() < 0) return "badge-overdue";
         if (getDaysLeft() <= 2) return "badge-today";
         return "badge-upcoming";
+    }
+
+    @Override
+    public String toString() {
+        return "StudyTask{" +
+                "taskId=" + taskId +
+                ", taskName='" + taskName + '\'' +
+                ", courseName='" + courseName + '\'' +
+                ", deadline=" + deadline +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

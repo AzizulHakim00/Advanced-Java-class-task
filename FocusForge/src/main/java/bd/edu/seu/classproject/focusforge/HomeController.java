@@ -1,4 +1,4 @@
-package bd.edu.seu.classproject;
+package bd.edu.seu.classproject.focusforge;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
