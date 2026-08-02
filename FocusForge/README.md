@@ -1,35 +1,26 @@
 # FocusForge – Smart Study Decision Assistant
 
-FocusForge is a Spring Boot, Thymeleaf, and MySQL class project. It manages study tasks and recommends a suitable task from the student's available time, energy, mood, deadline, difficulty, and importance.
+FocusForge is a Spring Boot, Thymeleaf, JPA, and MySQL class project. It manages study tasks and recommends a suitable task from the student's available time, energy, mood, deadline, difficulty, and importance.
 
-## Reorganized Code Structure
+## Product Shop Style Code Structure
 
-The project now follows the same layered Maven/Spring Boot format used by the provided Product Shop project:
+The uploaded Product Shop project keeps the application class in the root package and keeps each feature's entity, controller, repository, and service together inside one feature package. FocusForge now follows that same format:
 
 ```text
 src/main/java/bd/edu/seu/classproject/
 ├── FocusForgeApplication.java
-├── controller/
-│   ├── FocusForgeController.java
-│   └── HomeController.java
-├── model/
-│   ├── RecommendationResult.java
-│   ├── StudyCheckIn.java
-│   └── StudyTask.java
-├── repository/
-│   └── StudyTaskRepository.java
-└── service/
-    ├── RecommendationService.java
-    └── StudyTaskService.java
+└── focusforge/
+    ├── FocusForgeController.java
+    ├── HomeController.java
+    ├── StudyTask.java
+    ├── StudyCheckIn.java
+    ├── RecommendationResult.java
+    ├── StudyTaskRepository.java
+    ├── StudyTaskService.java
+    └── RecommendationService.java
 ```
 
-### Layer Responsibilities
-
-- `model` contains the JPA entity, validation rules, and form/result models.
-- `repository` handles database access through `JpaRepository`.
-- `service` contains CRUD, filtering, dashboard, history, and recommendation logic.
-- `controller` handles routes, form validation, model attributes, and page navigation.
-- `templates` and `static/css` contain the existing Thymeleaf interface and styles.
+The Thymeleaf templates, static CSS, page URLs, form actions, database table, and MySQL configuration remain unchanged.
 
 ## Main Features
 
@@ -42,6 +33,17 @@ src/main/java/bd/edu/seu/classproject/
 - Recommendation match score and explanation
 - Completed-task history, total study time, completion rate, and streak
 - Responsive Thymeleaf interface
+
+## Safety and Bug Fixes
+
+- Null-safe task search and filters
+- Case-insensitive status handling with allowed-value validation
+- Invalid task statuses are rejected
+- Overdue tasks are not counted again as due-within-two-days urgent tasks
+- Completed date is assigned when a task is completed and cleared when reopened
+- History chart denominator is always at least `1`, preventing division by zero
+- Recommendation percentage is always kept between `0` and `100`
+- Explicit constructors and accessors avoid hidden generated-code dependency in the project classes
 
 ## MySQL Configuration
 
@@ -56,13 +58,11 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## Database Setup
 
-The existing SQL file can be run in MySQL Workbench or phpMyAdmin:
+Run this file in MySQL Workbench or phpMyAdmin:
 
 ```text
 database/focusforge_db.sql
 ```
-
-It creates the database, table, and demo records used by the dashboard.
 
 ## Run
 
@@ -73,3 +73,9 @@ It creates the database, table, and demo records used by the dashboard.
 5. Reload Maven.
 6. Run `FocusForgeApplication.java`.
 7. Open `http://localhost:8080/focusforge/dashboard`.
+
+## Verification Performed
+
+- All reorganized Java sources passed a Java 21 compiler check using framework-compatible stubs.
+- In-memory execution tests passed for save, update, delete, status transition, completed date, search, filtering, urgent/overdue counts, recommendation, and history denominator behavior.
+- Existing template routes and model property names were preserved.
