@@ -4,8 +4,6 @@ FocusForge is a Spring Boot, Thymeleaf, JPA, and MySQL class project. It manages
 
 ## Product Shop Style Code Structure
 
-The uploaded Product Shop project keeps the application class in the root package and keeps each feature's entity, controller, repository, and service together inside one feature package. FocusForge now follows that same format:
-
 ```text
 src/main/java/bd/edu/seu/classproject/
 ├── FocusForgeApplication.java
@@ -20,7 +18,7 @@ src/main/java/bd/edu/seu/classproject/
     └── RecommendationService.java
 ```
 
-The Thymeleaf templates, static CSS, page URLs, form actions, database table, and MySQL configuration remain unchanged.
+The application explicitly scans only `bd.edu.seu.classproject.focusforge`. Legacy classes left in an older root, controller, model, repository, or service package are therefore not registered as Spring beans, JPA entities, or repositories.
 
 ## Main Features
 
@@ -30,20 +28,8 @@ The Thymeleaf templates, static CSS, page URLs, form actions, database table, an
 - Search and filter by status, difficulty, and importance
 - Dashboard statistics and deadline status
 - Mood, energy, time, deadline, difficulty, and importance based recommendation
-- Recommendation match score and explanation
 - Completed-task history, total study time, completion rate, and streak
 - Responsive Thymeleaf interface
-
-## Safety and Bug Fixes
-
-- Null-safe task search and filters
-- Case-insensitive status handling with allowed-value validation
-- Invalid task statuses are rejected
-- Overdue tasks are not counted again as due-within-two-days urgent tasks
-- Completed date is assigned when a task is completed and cleared when reopened
-- History chart denominator is always at least `1`, preventing division by zero
-- Recommendation percentage is always kept between `0` and `100`
-- Explicit constructors and accessors avoid hidden generated-code dependency in the project classes
 
 ## MySQL Configuration
 
@@ -56,51 +42,42 @@ spring.datasource.password=password
 spring.jpa.hibernate.ddl-auto=update
 ```
 
-## Database Setup
-
-Run this file in MySQL Workbench or phpMyAdmin:
-
-```text
-database/focusforge_db.sql
-```
-
-## Run
+## Normal Run
 
 1. Start MySQL Server on port `3306`.
-2. Run `database/focusforge_db.sql`, or allow JPA to create/update the table.
-3. Open the `FocusForge` folder in IntelliJ IDEA.
-4. Select JDK 21 or newer.
-5. Reload Maven.
-6. Run `FocusForgeApplication.java`.
-7. Open `http://localhost:8080/focusforge/dashboard`.
+2. Open the `FocusForge` folder in IntelliJ IDEA.
+3. Select JDK 21.
+4. Reload the Maven project.
+5. Run `FocusForgeApplication.java`.
+6. Open `http://localhost:8080/focusforge/dashboard`.
 
-## Clean Run After Package Refactoring
+## Complete Windows Recovery
 
-When Java classes are moved to another package, IntelliJ or Maven may leave the old compiled `.class` file inside `target/classes`. Spring then detects both the old and new controller and reports a `ConflictingBeanDefinitionException` even though the old Java source has already been deleted.
+Use this after pulling a package-refactoring update or after seeing `ConflictingBeanDefinitionException`.
 
-On Windows, stop the running application and double-click:
+1. Stop the application in IntelliJ.
+2. Pull the latest `main` branch.
+3. Run `FocusForge/clean-run.cmd`.
 
-```text
+The script automatically removes:
+
+- `target` and `out` compiled output
+- legacy root-package Java files
+- legacy `controller`, `model`, `repository`, and `service` directories
+
+It then performs a fresh Maven download check, clean build, and Spring Boot startup.
+
+```bat
+cd "C:\Github\Advanced Java class task"
+git pull origin main
+cd FocusForge
 clean-run.cmd
 ```
 
-The script deletes the complete `target` directory and starts the application with:
+## Startup Hardening
 
-```text
-mvnw.cmd clean spring-boot:run
-```
-
-You can also perform the same cleanup manually from the `FocusForge` directory:
-
-```bat
-rmdir /s /q target
-mvnw.cmd clean spring-boot:run
-```
-
-After this one-time clean build, IntelliJ can run `FocusForgeApplication.java` normally.
-
-## Verification Performed
-
-- All reorganized Java sources passed a Java 21 compiler check using framework-compatible stubs.
-- In-memory execution tests passed for save, update, delete, status transition, completed date, search, filtering, urgent/overdue counts, recommendation, and history denominator behavior.
-- Existing template routes and model property names were preserved.
+- Component scanning is restricted to the final `focusforge` feature package.
+- Entity scanning is restricted to the final `focusforge` feature package.
+- JPA repository scanning is restricted to the final `focusforge` feature package.
+- Spring Boot DevTools was removed to prevent restart-classloader reuse of deleted classes.
+- Lombok and its annotation-processor configuration were removed because the project uses explicit constructors and accessors.
