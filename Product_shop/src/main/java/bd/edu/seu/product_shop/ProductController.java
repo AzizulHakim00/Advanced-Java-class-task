@@ -16,12 +16,8 @@ import java.util.List;
 @RequestMapping("/product")
 public class ProductController {
 
-    private final ProuductService prouductService;
+    private final ProductService productService;
 
-    /// dip ///
-//    public ProductController(ProuductService prouductService) {
-//        this.prouductService = prouductService;
-//    }
 
     @GetMapping("/add")
     public String showProductForm(Model model) {
@@ -46,7 +42,7 @@ public class ProductController {
             return "form";
         }
 
-        prouductService.saveProduct(product);
+        productService.saveProduct(product);
 
         log.info("Product added: {}", product);
 
@@ -59,7 +55,7 @@ public class ProductController {
             @RequestParam(required = false) String category,
             Model model) {
 
-        List<Product> products = prouductService.getAll();
+        List<Product> products = productService.getAll();
 
         List<Product> filteredProducts = products.stream()
                 .filter(product -> {
@@ -92,7 +88,7 @@ public class ProductController {
             @PathVariable Integer id,
             Model model) {
 
-        Product existingProduct = prouductService.getById(id);
+        Product existingProduct = productService.getById(id);
 
         if (existingProduct == null) {
             return "redirect:/product/list";
@@ -121,7 +117,7 @@ public class ProductController {
             return "form";
         }
 
-        Product existingProduct = prouductService.getById(id);
+        Product existingProduct = productService.getById(id);
 
         if (existingProduct == null) {
             return "redirect:/product/list";
@@ -129,7 +125,7 @@ public class ProductController {
 
         product.setId(id);
 
-        prouductService.saveProduct(product);
+        productService.saveProduct(product);
 
         log.info("Product updated: {}", product);
 
@@ -139,10 +135,10 @@ public class ProductController {
     @GetMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Integer id) {
 
-        Product existingProduct = prouductService.getById(id);
+        Product existingProduct = productService.getById(id);
 
         if (existingProduct != null) {
-            prouductService.deleteById(id);
+            productService.deleteById(id);
 
             log.info("Product deleted. ID: {}", id);
         }

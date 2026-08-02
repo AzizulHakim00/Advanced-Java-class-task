@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ProuductService {
+public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProuductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
