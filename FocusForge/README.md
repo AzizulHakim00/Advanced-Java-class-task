@@ -74,6 +74,31 @@ database/focusforge_db.sql
 6. Run `FocusForgeApplication.java`.
 7. Open `http://localhost:8080/focusforge/dashboard`.
 
+## Clean Run After Package Refactoring
+
+When Java classes are moved to another package, IntelliJ or Maven may leave the old compiled `.class` file inside `target/classes`. Spring then detects both the old and new controller and reports a `ConflictingBeanDefinitionException` even though the old Java source has already been deleted.
+
+On Windows, stop the running application and double-click:
+
+```text
+clean-run.cmd
+```
+
+The script deletes the complete `target` directory and starts the application with:
+
+```text
+mvnw.cmd clean spring-boot:run
+```
+
+You can also perform the same cleanup manually from the `FocusForge` directory:
+
+```bat
+rmdir /s /q target
+mvnw.cmd clean spring-boot:run
+```
+
+After this one-time clean build, IntelliJ can run `FocusForgeApplication.java` normally.
+
 ## Verification Performed
 
 - All reorganized Java sources passed a Java 21 compiler check using framework-compatible stubs.
