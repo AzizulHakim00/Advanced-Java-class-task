@@ -1,0 +1,35 @@
+name: FocusForge Auth Verify
+
+on:
+  push:
+    branches:
+      - agent/focusforge-simple-auth-features
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: focusforge_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ppassword"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Test FocusForge authentication build
+        working-directory: FocusForge
+        run: |
+          chmod +x mvnw
+          ./mvnw clean test
