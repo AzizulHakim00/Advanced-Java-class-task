@@ -1,7 +1,6 @@
 package bd.edu.seu.classproject.focusforge.notes;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/note")
 public class StudyNoteController {
 
     private final StudyNoteService studyNoteService;
+
+    public StudyNoteController(StudyNoteService studyNoteService) {
+        this.studyNoteService = studyNoteService;
+    }
 
     @GetMapping("/add")
     public String showForm(Model model) {
@@ -25,12 +27,9 @@ public class StudyNoteController {
     }
 
     @PostMapping("/add")
-    public String submit(@Valid @ModelAttribute StudyNote studyNote,
+    public String submit(@Valid @ModelAttribute("studyNote") StudyNote studyNote,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "note-form";
-        }
-
+        if (bindingResult.hasErrors()) return "note-form";
         studyNoteService.saveNote(studyNote);
         return "redirect:/note/list";
     }

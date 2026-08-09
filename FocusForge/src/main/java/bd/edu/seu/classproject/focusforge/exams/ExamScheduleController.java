@@ -1,7 +1,6 @@
 package bd.edu.seu.classproject.focusforge.exams;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/exam")
 public class ExamScheduleController {
 
     private final ExamScheduleService examScheduleService;
+
+    public ExamScheduleController(ExamScheduleService examScheduleService) {
+        this.examScheduleService = examScheduleService;
+    }
 
     @GetMapping("/add")
     public String showForm(Model model) {
@@ -25,11 +27,9 @@ public class ExamScheduleController {
     }
 
     @PostMapping("/add")
-    public String submit(@Valid @ModelAttribute ExamSchedule examSchedule,
+    public String submit(@Valid @ModelAttribute("examSchedule") ExamSchedule examSchedule,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "exam-form";
-        }
+        if (bindingResult.hasErrors()) return "exam-form";
         examScheduleService.saveExam(examSchedule);
         return "redirect:/exam/list";
     }

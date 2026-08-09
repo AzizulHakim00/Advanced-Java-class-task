@@ -1,7 +1,6 @@
 package bd.edu.seu.classproject.focusforge.sessions;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/session")
 public class FocusSessionController {
 
     private final FocusSessionService focusSessionService;
+
+    public FocusSessionController(FocusSessionService focusSessionService) {
+        this.focusSessionService = focusSessionService;
+    }
 
     @GetMapping("/add")
     public String showForm(Model model) {
@@ -29,12 +31,9 @@ public class FocusSessionController {
     }
 
     @PostMapping("/add")
-    public String submit(@Valid @ModelAttribute FocusSession focusSession,
+    public String submit(@Valid @ModelAttribute("focusSession") FocusSession focusSession,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "session-form";
-        }
-
+        if (bindingResult.hasErrors()) return "session-form";
         focusSessionService.saveSession(focusSession);
         return "redirect:/session/list";
     }

@@ -1,7 +1,6 @@
 package bd.edu.seu.classproject.focusforge.goals;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/goal")
 public class StudyGoalController {
 
     private final StudyGoalService studyGoalService;
+
+    public StudyGoalController(StudyGoalService studyGoalService) {
+        this.studyGoalService = studyGoalService;
+    }
 
     @GetMapping("/add")
     public String showForm(Model model) {
@@ -27,11 +29,9 @@ public class StudyGoalController {
     }
 
     @PostMapping("/add")
-    public String submit(@Valid @ModelAttribute StudyGoal studyGoal,
+    public String submit(@Valid @ModelAttribute("studyGoal") StudyGoal studyGoal,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "goal-form";
-        }
+        if (bindingResult.hasErrors()) return "goal-form";
         studyGoalService.saveGoal(studyGoal);
         return "redirect:/goal/list";
     }

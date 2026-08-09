@@ -1,15 +1,17 @@
 package bd.edu.seu.classproject.focusforge.resources;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StudyResourceService {
 
     private final StudyResourceRepository studyResourceRepository;
+
+    public StudyResourceService(StudyResourceRepository studyResourceRepository) {
+        this.studyResourceRepository = studyResourceRepository;
+    }
 
     public StudyResource saveResource(StudyResource studyResource) {
         return studyResourceRepository.save(studyResource);
@@ -20,6 +22,8 @@ public class StudyResourceService {
     }
 
     public void deleteById(Long id) {
-        studyResourceRepository.deleteById(id);
+        if (id != null && studyResourceRepository.existsById(id)) {
+            studyResourceRepository.deleteById(id);
+        }
     }
 }

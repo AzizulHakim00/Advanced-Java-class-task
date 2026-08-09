@@ -1,15 +1,17 @@
 package bd.edu.seu.classproject.focusforge.goals;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StudyGoalService {
 
     private final StudyGoalRepository studyGoalRepository;
+
+    public StudyGoalService(StudyGoalRepository studyGoalRepository) {
+        this.studyGoalRepository = studyGoalRepository;
+    }
 
     public StudyGoal saveGoal(StudyGoal studyGoal) {
         return studyGoalRepository.save(studyGoal);
@@ -20,6 +22,8 @@ public class StudyGoalService {
     }
 
     public void deleteById(Long id) {
-        studyGoalRepository.deleteById(id);
+        if (id != null && studyGoalRepository.existsById(id)) {
+            studyGoalRepository.deleteById(id);
+        }
     }
 }

@@ -1,7 +1,6 @@
 package bd.edu.seu.classproject.focusforge.resources;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequiredArgsConstructor
 @RequestMapping("/resource")
 public class StudyResourceController {
 
     private final StudyResourceService studyResourceService;
+
+    public StudyResourceController(StudyResourceService studyResourceService) {
+        this.studyResourceService = studyResourceService;
+    }
 
     @GetMapping("/add")
     public String showForm(Model model) {
@@ -25,11 +27,9 @@ public class StudyResourceController {
     }
 
     @PostMapping("/add")
-    public String submit(@Valid @ModelAttribute StudyResource studyResource,
+    public String submit(@Valid @ModelAttribute("studyResource") StudyResource studyResource,
                          BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "resource-form";
-        }
+        if (bindingResult.hasErrors()) return "resource-form";
         studyResourceService.saveResource(studyResource);
         return "redirect:/resource/list";
     }

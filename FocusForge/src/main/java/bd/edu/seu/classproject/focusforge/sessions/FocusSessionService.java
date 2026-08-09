@@ -1,18 +1,20 @@
 package bd.edu.seu.classproject.focusforge.sessions;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class FocusSessionService {
 
     private final FocusSessionRepository focusSessionRepository;
 
-    public void saveSession(FocusSession focusSession) {
-        focusSessionRepository.save(focusSession);
+    public FocusSessionService(FocusSessionRepository focusSessionRepository) {
+        this.focusSessionRepository = focusSessionRepository;
+    }
+
+    public FocusSession saveSession(FocusSession focusSession) {
+        return focusSessionRepository.save(focusSession);
     }
 
     public List<FocusSession> getAll() {
@@ -20,6 +22,8 @@ public class FocusSessionService {
     }
 
     public void deleteById(Long id) {
-        focusSessionRepository.deleteById(id);
+        if (id != null && focusSessionRepository.existsById(id)) {
+            focusSessionRepository.deleteById(id);
+        }
     }
 }

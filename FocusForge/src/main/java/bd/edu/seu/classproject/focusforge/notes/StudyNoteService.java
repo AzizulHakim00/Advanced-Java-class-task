@@ -1,18 +1,20 @@
 package bd.edu.seu.classproject.focusforge.notes;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StudyNoteService {
 
     private final StudyNoteRepository studyNoteRepository;
 
-    public void saveNote(StudyNote studyNote) {
-        studyNoteRepository.save(studyNote);
+    public StudyNoteService(StudyNoteRepository studyNoteRepository) {
+        this.studyNoteRepository = studyNoteRepository;
+    }
+
+    public StudyNote saveNote(StudyNote studyNote) {
+        return studyNoteRepository.save(studyNote);
     }
 
     public List<StudyNote> getAll() {
@@ -20,6 +22,8 @@ public class StudyNoteService {
     }
 
     public void deleteById(Long id) {
-        studyNoteRepository.deleteById(id);
+        if (id != null && studyNoteRepository.existsById(id)) {
+            studyNoteRepository.deleteById(id);
+        }
     }
 }
