@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<main class="page">
+    <div class="form-card" style="max-width:500px;margin:50px auto;">
+        <h1>Sign Up</h1>
+        <form th:action="@{/sign-up}" th:object="${user}" method="post">
+            <div class="field"><label>Name</label><input th:field="*{name}"><span class="error" th:errors="*{name}"></span></div><br>
+            <div class="field"><label>Email</label><input type="email" th:field="*{email}"><span class="error" th:errors="*{email}"></span></div><br>
+            <div class="field"><label>Password</label><input type="password" th:field="*{password}"><span class="error" th:errors="*{password}"></span></div><br>
+            <button class="btn btn-green" type="submit">Sign Up</button>
+            <a class="btn btn-light" th:href="@{/sign-in}">Sign In</a>
+        </form>
+    </div>
+</main>
+</body>
+</html>
