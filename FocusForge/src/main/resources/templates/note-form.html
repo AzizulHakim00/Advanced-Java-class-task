@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Add Study Note</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body><main class="page"><div class="form-card"><h1>Add Study Note</h1><form th:action="@{/note/add}" th:object="${studyNote}" method="post"><div class="field"><label>Title</label><input th:field="*{title}"><span class="error" th:errors="*{title}"></span></div><br><div class="field"><label>Course</label><input th:field="*{course}"><span class="error" th:errors="*{course}"></span></div><br><div class="field"><label>Note</label><textarea th:field="*{note}" rows="5"></textarea><span class="error" th:errors="*{note}"></span></div><br><button class="btn btn-green" type="submit">Save</button> <a class="btn btn-light" th:href="@{/note/list}">List</a></form></div></main></body>
+</html>

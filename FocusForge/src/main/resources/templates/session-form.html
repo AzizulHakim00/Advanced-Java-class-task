@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Add Focus Session</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body><main class="page"><div class="form-card"><h1>Add Focus Session</h1><form th:action="@{/session/add}" th:object="${focusSession}" method="post"><div class="field"><label>Subject</label><input th:field="*{subject}"><span class="error" th:errors="*{subject}"></span></div><br><div class="field"><label>Duration (minutes)</label><input type="number" th:field="*{duration}"><span class="error" th:errors="*{duration}"></span></div><br><div class="field"><label>Date</label><input type="date" th:field="*{sessionDate}"><span class="error" th:errors="*{sessionDate}"></span></div><br><button class="btn btn-green" type="submit">Save</button> <a class="btn btn-light" th:href="@{/session/list}">List</a></form></div></main></body>
+</html>

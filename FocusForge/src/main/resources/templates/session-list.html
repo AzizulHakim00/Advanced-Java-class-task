@@ -1,0 +1,5 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Focus Sessions</title><link rel="stylesheet" th:href="@{/css/style.css}"></head>
+<body><main class="page"><div class="toolbar"><h1>Focus Sessions</h1><a class="btn btn-blue" th:href="@{/session/add}">Add Session</a></div><div class="table-card"><table><thead><tr><th>ID</th><th>Subject</th><th>Duration</th><th>Date</th><th>Action</th></tr></thead><tbody><tr th:each="session : ${sessions}"><td th:text="${session.id}"></td><td th:text="${session.subject}"></td><td th:text="${session.duration}"></td><td th:text="${session.sessionDate}"></td><td><a class="btn btn-red" th:href="@{/session/delete(id=${session.id})}">Delete</a></td></tr></tbody></table></div><br><a class="btn btn-light" th:href="@{/focusforge/dashboard}">Dashboard</a></main></body>
+</html>
