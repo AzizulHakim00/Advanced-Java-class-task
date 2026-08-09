@@ -2,7 +2,6 @@ package bd.edu.seu.classproject.focusforge;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,10 +18,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filter(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(request -> request
-                        .requestMatchers("/sign-up", "/css/**").permitAll()
-                        .anyRequest().authenticated())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/sign-in", "/sign-up", "/css/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .formLogin(form -> form
                         .loginPage("/sign-in")
                         .loginProcessingUrl("/sign-in")
@@ -30,9 +31,13 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .defaultSuccessUrl("/focusforge/dashboard", true)
                         .failureUrl("/sign-in?error=true")
-                        .permitAll())
-                .logout(Customizer.withDefaults())
-                .rememberMe(Customizer.withDefaults());
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/sign-in?logout=true")
+                        .permitAll()
+                );
 
         return http.build();
     }
