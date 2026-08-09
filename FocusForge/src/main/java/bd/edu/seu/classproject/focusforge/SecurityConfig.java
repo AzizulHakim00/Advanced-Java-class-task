@@ -25,6 +25,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .loginPage("/sign-in")
+                        .loginProcessingUrl("/sign-in")
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/focusforge/dashboard", true)
