@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sign In - FocusForge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/extra.css}">
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-card">
+        <div class="brand auth-brand">🎓 Focus<span>Forge</span></div>
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to your personal study workspace.</p>
+        <div class="alert success" th:if="${param.registered}">Account created successfully. Please sign in.</div>
+        <div class="alert error-box" th:if="${param.error}">Invalid email or password.</div>
+        <div class="alert success" th:if="${param.logout}">You have been signed out.</div>
+        <form th:action="@{/auth/login}" method="post" class="form-card auth-form">
+            <div class="field"><label>Email</label><input type="email" name="email" placeholder="you@example.com" required></div>
+            <div class="field"><label>Password</label><input type="password" name="password" placeholder="Your password" required></div>
+            <label class="remember"><input type="checkbox" name="remember-me"> Remember me</label>
+            <button class="btn btn-blue full-width" type="submit">Sign In</button>
+        </form>
+        <p class="text-center small">New to FocusForge? <a th:href="@{/auth/signup}">Create an account</a></p>
+    </section>
+</main>
+</body>
+</html>

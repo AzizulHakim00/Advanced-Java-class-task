@@ -1,5 +1,6 @@
 package bd.edu.seu.classproject.focusforge;
 
+import bd.edu.seu.classproject.focusforge.auth.UserService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -21,11 +23,14 @@ public class FocusForgeController {
 
     private final StudyTaskService studyTaskService;
     private final RecommendationService recommendationService;
+    private final UserService userService;
 
     public FocusForgeController(StudyTaskService studyTaskService,
-                                RecommendationService recommendationService) {
+                                RecommendationService recommendationService,
+                                UserService userService) {
         this.studyTaskService = studyTaskService;
         this.recommendationService = recommendationService;
+        this.userService = userService;
     }
 
     @ModelAttribute("difficulties")
@@ -49,8 +54,9 @@ public class FocusForgeController {
     }
 
     @GetMapping("/dashboard")
-    public String showDashboard(Model model) {
-        List<StudyTask> tasks = studyTaskService.getAllTasks();
+    public String showDashboard(Model model, Principal principal) {
+        String email = principal.getName();
+        List<StudyTask> tasks = studyTaskService.getAllTasks(email);
 
         long pendingCount = studyTaskService.countOpenByStatus(tasks, "Pending");
         long inProgressCount = studyTaskService.countOpenByStatus(tasks, "In Progress");
@@ -69,6 +75,7 @@ public class FocusForgeController {
                 ? 0
                 : Math.max(0, 100 - completedPercent - pendingPercent);
 
+        model.addAttribute("currentUserName", userService.displayName(email));
         model.addAttribute("today", LocalDate.now()
                 .format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy")));
         model.addAttribute("totalCount", tasks.size());
@@ -99,7 +106,7 @@ public class FocusForgeController {
 
     @PostMapping("/tasks/add")
     public String addTask(@Valid @ModelAttribute("task") StudyTask task,
-                          BindingResult bindingResult, Model model) {
+                          BindingResult bindingResult, Model model, Principal principal) {
         if (studyTaskService.existsById(task.getTaskId())) {
             bindingResult.rejectValue(
                     "taskId", "duplicate.taskId", "This Task ID already exists");
@@ -110,7 +117,7 @@ public class FocusForgeController {
             return "task-form";
         }
 
-        studyTaskService.saveTask(task);
+        studyTaskService.saveTask(task, principal.getName());
         return "redirect:/focusforge/tasks";
     }
 
@@ -119,9 +126,9 @@ public class FocusForgeController {
                                @RequestParam(required = false) String status,
                                @RequestParam(required = false) String difficulty,
                                @RequestParam(required = false) String importance,
-                               Model model) {
+                               Model model, Principal principal) {
         model.addAttribute("tasks", studyTaskService.searchTasks(
-                keyword, status, difficulty, importance));
+                keyword, status, difficulty, importance, principal.getName()));
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedStatus", status);
         model.addAttribute("selectedDifficulty", difficulty);
@@ -130,8 +137,8 @@ public class FocusForgeController {
     }
 
     @GetMapping("/tasks/edit/{taskId}")
-    public String showEditForm(@PathVariable Integer taskId, Model model) {
-        StudyTask existingTask = studyTaskService.getTaskById(taskId).orElse(null);
+    public String showEditForm(@PathVariable Integer taskId, Model model, Principal principal) {
+        StudyTask existingTask = studyTaskService.getTaskById(taskId, principal.getName()).orElse(null);
         if (existingTask == null) return "redirect:/focusforge/tasks";
 
         addTaskFormAttributes(model, "Edit Study Task", existingTask, true, taskId);
@@ -141,28 +148,28 @@ public class FocusForgeController {
     @PostMapping("/tasks/edit/{taskId}")
     public String updateTask(@PathVariable Integer taskId,
                              @Valid @ModelAttribute("task") StudyTask task,
-                             BindingResult bindingResult, Model model) {
+                             BindingResult bindingResult, Model model, Principal principal) {
         if (bindingResult.hasErrors()) {
             addTaskFormAttributes(model, "Edit Study Task", task, true, taskId);
             return "task-form";
         }
 
-        if (studyTaskService.updateTask(taskId, task).isEmpty()) {
+        if (studyTaskService.updateTask(taskId, task, principal.getName()).isEmpty()) {
             return "redirect:/focusforge/tasks";
         }
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/delete/{taskId}")
-    public String deleteTask(@PathVariable Integer taskId) {
-        studyTaskService.deleteTask(taskId);
+    public String deleteTask(@PathVariable Integer taskId, Principal principal) {
+        studyTaskService.deleteTask(taskId, principal.getName());
         return "redirect:/focusforge/tasks";
     }
 
     @GetMapping("/tasks/status/{taskId}")
     public String updateTaskStatus(@PathVariable Integer taskId,
-                                   @RequestParam String value) {
-        studyTaskService.updateStatus(taskId, value);
+                                   @RequestParam String value, Principal principal) {
+        studyTaskService.updateStatus(taskId, value, principal.getName());
         return "redirect:/focusforge/tasks";
     }
 
@@ -174,11 +181,11 @@ public class FocusForgeController {
 
     @PostMapping("/recommend")
     public String recommend(@Valid @ModelAttribute("checkIn") StudyCheckIn checkIn,
-                            BindingResult bindingResult, Model model) {
+                            BindingResult bindingResult, Model model, Principal principal) {
         if (bindingResult.hasErrors()) return "check-in";
 
         RecommendationResult result = recommendationService.recommend(
-                studyTaskService.getAllTasks(), checkIn);
+                studyTaskService.getAllTasks(principal.getName()), checkIn);
         model.addAttribute("checkIn", checkIn);
         model.addAttribute("result", result);
         model.addAttribute("hasRecommendation", result != null);
@@ -186,15 +193,16 @@ public class FocusForgeController {
     }
 
     @GetMapping("/history")
-    public String showHistory(Model model) {
-        List<StudyTask> completedTasks = studyTaskService.getCompletedTasks();
+    public String showHistory(Model model, Principal principal) {
+        String email = principal.getName();
+        List<StudyTask> completedTasks = studyTaskService.getCompletedTasks(email);
 
         model.addAttribute("completedTasks", completedTasks);
         model.addAttribute("recentCompletedTasks", completedTasks.stream().limit(5).toList());
         model.addAttribute("totalStudyMinutes",
                 studyTaskService.calculateTotalStudyMinutes(completedTasks));
         model.addAttribute("completionRate",
-                studyTaskService.calculateCompletionRate(completedTasks));
+                studyTaskService.calculateCompletionRate(completedTasks, email));
         model.addAttribute("currentStreak",
                 studyTaskService.calculateCurrentStreak(completedTasks));
         model.addAttribute("maximumMinutes",

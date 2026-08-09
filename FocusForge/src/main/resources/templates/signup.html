@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sign Up - FocusForge</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"><link rel="stylesheet" th:href="@{/css/extra.css}">
+</head>
+<body>
+<main class="auth-page">
+    <section class="auth-card wide-auth">
+        <div class="brand auth-brand">🎓 Focus<span>Forge</span></div>
+        <h1>Create your account</h1>
+        <p class="muted">Your tasks, notes and focus sessions stay under your own login.</p>
+        <form th:action="@{/auth/signup}" th:object="${user}" method="post" class="form-card auth-form">
+            <div class="field"><label>Full Name</label><input th:field="*{fullName}" placeholder="Your name"><span class="error" th:errors="*{fullName}"></span></div>
+            <div class="field"><label>Email</label><input type="email" th:field="*{email}" placeholder="you@example.com"><span class="error" th:errors="*{email}"></span></div>
+            <div class="field"><label>Password</label><input type="password" th:field="*{password}" placeholder="At least 6 characters"><span class="error" th:errors="*{password}"></span></div>
+            <div class="field"><label>Confirm Password</label><input type="password" th:field="*{confirmPassword}" placeholder="Repeat password"><span class="error" th:errors="*{confirmPassword}"></span></div>
+            <button class="btn btn-green full-width" type="submit">Create Account</button>
+        </form>
+        <p class="text-center small">Already have an account? <a th:href="@{/auth/login}">Sign in</a></p>
+    </section>
+</main>
+</body>
+</html>

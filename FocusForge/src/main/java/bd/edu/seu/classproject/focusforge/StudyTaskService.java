@@ -25,47 +25,53 @@ public class StudyTaskService {
         this.studyTaskRepository = studyTaskRepository;
     }
 
-    public List<StudyTask> getAllTasks() {
-        return studyTaskRepository.findAll();
+    public List<StudyTask> getAllTasks(String ownerEmail) {
+        claimLegacyTasks(ownerEmail);
+        return studyTaskRepository.findAllByOwnerEmailIgnoreCase(ownerEmail).stream()
+                .sorted(DEADLINE_COMPARATOR)
+                .toList();
     }
 
-    public Optional<StudyTask> getTaskById(Integer taskId) {
-        if (taskId == null) return Optional.empty();
-        return studyTaskRepository.findById(taskId);
+    public Optional<StudyTask> getTaskById(Integer taskId, String ownerEmail) {
+        if (taskId == null || ownerEmail == null) return Optional.empty();
+        return studyTaskRepository.findByTaskIdAndOwnerEmailIgnoreCase(taskId, ownerEmail);
     }
 
     public boolean existsById(Integer taskId) {
         return taskId != null && studyTaskRepository.existsById(taskId);
     }
 
-    public StudyTask saveTask(StudyTask task) {
+    public StudyTask saveTask(StudyTask task, String ownerEmail) {
         Objects.requireNonNull(task, "Task cannot be null");
+        task.setOwnerEmail(ownerEmail);
         updateCompletedDate(task);
         return studyTaskRepository.save(task);
     }
 
-    public Optional<StudyTask> updateTask(Integer taskId, StudyTask submittedTask) {
-        if (taskId == null || submittedTask == null) return Optional.empty();
+    public Optional<StudyTask> updateTask(Integer taskId, StudyTask submittedTask, String ownerEmail) {
+        if (taskId == null || submittedTask == null || ownerEmail == null) return Optional.empty();
 
-        return studyTaskRepository.findById(taskId).map(existingTask -> {
+        return studyTaskRepository.findByTaskIdAndOwnerEmailIgnoreCase(taskId, ownerEmail).map(existingTask -> {
             submittedTask.setTaskId(taskId);
+            submittedTask.setOwnerEmail(ownerEmail);
             submittedTask.setCompletedDate(existingTask.getCompletedDate());
             updateCompletedDate(submittedTask);
             return studyTaskRepository.save(submittedTask);
         });
     }
 
-    public boolean deleteTask(Integer taskId) {
-        if (!existsById(taskId)) return false;
-        studyTaskRepository.deleteById(taskId);
-        return true;
+    public boolean deleteTask(Integer taskId, String ownerEmail) {
+        return getTaskById(taskId, ownerEmail).map(task -> {
+            studyTaskRepository.delete(task);
+            return true;
+        }).orElse(false);
     }
 
-    public boolean updateStatus(Integer taskId, String requestedStatus) {
+    public boolean updateStatus(Integer taskId, String requestedStatus, String ownerEmail) {
         String status = canonicalStatus(requestedStatus);
-        if (status == null || taskId == null) return false;
+        if (status == null || taskId == null || ownerEmail == null) return false;
 
-        return studyTaskRepository.findById(taskId).map(task -> {
+        return studyTaskRepository.findByTaskIdAndOwnerEmailIgnoreCase(taskId, ownerEmail).map(task -> {
             task.setStatus(status);
             updateCompletedDate(task);
             studyTaskRepository.save(task);
@@ -74,8 +80,8 @@ public class StudyTaskService {
     }
 
     public List<StudyTask> searchTasks(String keyword, String status,
-                                       String difficulty, String importance) {
-        return getAllTasks().stream()
+                                       String difficulty, String importance, String ownerEmail) {
+        return getAllTasks(ownerEmail).stream()
                 .filter(Objects::nonNull)
                 .filter(task -> matchesKeyword(task, keyword))
                 .filter(task -> matches(task.getStatus(), status))
@@ -134,8 +140,8 @@ public class StudyTaskService {
         return percentage(countByStatus(tasks, "Completed"), tasks.size());
     }
 
-    public List<StudyTask> getCompletedTasks() {
-        return getAllTasks().stream()
+    public List<StudyTask> getCompletedTasks(String ownerEmail) {
+        return getAllTasks(ownerEmail).stream()
                 .filter(Objects::nonNull)
                 .filter(task -> "Completed".equalsIgnoreCase(task.getStatus()))
                 .sorted(Comparator.comparing(
@@ -152,8 +158,8 @@ public class StudyTaskService {
                 .sum();
     }
 
-    public int calculateCompletionRate(List<StudyTask> completedTasks) {
-        long totalTasks = studyTaskRepository.count();
+    public int calculateCompletionRate(List<StudyTask> completedTasks, String ownerEmail) {
+        long totalTasks = ownerEmail == null ? 0 : studyTaskRepository.countByOwnerEmailIgnoreCase(ownerEmail);
         long completedCount = completedTasks == null ? 0 : completedTasks.size();
         return percentage(completedCount, totalTasks);
     }
@@ -201,6 +207,14 @@ public class StudyTaskService {
     public int percentage(long value, long total) {
         if (total <= 0) return 0;
         return (int) Math.round((value * 100.0) / total);
+    }
+
+    private void claimLegacyTasks(String ownerEmail) {
+        if (ownerEmail == null || ownerEmail.isBlank()) return;
+        List<StudyTask> legacyTasks = studyTaskRepository.findAllByOwnerEmailIsNull();
+        if (legacyTasks.isEmpty()) return;
+        legacyTasks.forEach(task -> task.setOwnerEmail(ownerEmail));
+        studyTaskRepository.saveAll(legacyTasks);
     }
 
     private boolean matchesKeyword(StudyTask task, String keyword) {

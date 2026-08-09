@@ -26,6 +26,9 @@ public class StudyTask {
     @Column(name = "task_id")
     private Integer taskId;
 
+    @Column(name = "owner_email", length = 120)
+    private String ownerEmail;
+
     @NotBlank(message = "Task name cannot be blank")
     @Size(min = 3, max = 100, message = "Task name must be between 3 and 100 characters")
     @Column(name = "task_name", nullable = false, length = 100)
@@ -90,6 +93,8 @@ public class StudyTask {
 
     public Integer getTaskId() { return taskId; }
     public void setTaskId(Integer taskId) { this.taskId = taskId; }
+    public String getOwnerEmail() { return ownerEmail; }
+    public void setOwnerEmail(String ownerEmail) { this.ownerEmail = ownerEmail; }
     public String getTaskName() { return taskName; }
     public void setTaskName(String taskName) { this.taskName = taskName; }
     public String getCourseName() { return courseName; }
