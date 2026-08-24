@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Page</title>
+</head>
+
+<body>
+
+<h1>Admin Dashboard</h1>
+
+<p>Welcome Administrator!</p>
+
+<p>
+    Logged in as:
+    <strong sec:authentication="name"></strong>
+</p>
+
+<p>
+    Role:
+    <span sec:authentication="authorities"></span>
+</p>
+
+<form th:action="@{/logout}" method="post" style="display:inline;">
+    <button type="submit" class="logout-link">Sign Out</button>
+</form>
+
+
+</body>
+</html>
