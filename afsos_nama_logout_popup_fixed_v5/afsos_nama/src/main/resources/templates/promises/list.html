@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promises | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('promises')}"></div>
+    <main class="app-main">
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <header class="workspace-header">
+            <div>
+                <span class="page-kicker">Action commitments</span>
+                <h1>Promises</h1>
+                <p>Turn reflection into one clear action and track what happened.</p>
+            </div>
+            <a class="button button-coral" th:href="@{/promises/new}"><svg class="icon"><use href="/images/ui-icons.svg#plus"></use></svg>New Promise</a>
+        </header>
+
+        <section class="promise-summary-banner">
+            <div class="promise-summary-copy">
+                <span class="promise-summary-icon"><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span>
+                <div><span>Commitment system</span><h2>Small promises create visible progress.</h2><p>Keep each promise specific enough to mark it completed or broken.</p></div>
+            </div>
+            <div class="promise-summary-count"><strong th:text="${#lists.size(promises)}">0</strong><span>Total promises</span></div>
+        </section>
+
+        <section class="empty-page-state" th:if="${#lists.isEmpty(promises)}">
+            <span class="empty-page-icon"><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span>
+            <h2>No promises yet</h2><p>Create one practical commitment from your latest lesson.</p>
+            <a class="button button-coral" th:href="@{/promises/new}">Create Promise</a>
+        </section>
+
+        <section class="promise-board" th:unless="${#lists.isEmpty(promises)}">
+            <div class="promise-column promise-column-active">
+                <header><span class="promise-column-icon"><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span><div><h2>Active</h2><p>Still in progress</p></div></header>
+                <div class="promise-column-body">
+                    <article class="promise-card" th:each="promise : ${promises}" th:if="${promise.status.name() == 'ACTIVE'}">
+                        <div class="promise-card-top"><span class="status-pill status-active">Active</span><time th:text="${#temporals.format(promise.targetDate, 'dd MMM yyyy')}">Date</time></div>
+                        <h3 th:text="${promise.title}">Promise title</h3>
+                        <div class="promise-card-meta"><svg class="icon"><use href="/images/ui-icons.svg#clock"></use></svg><span th:text="${'Target date: ' + #temporals.format(promise.targetDate, 'dd MMMM yyyy')}">Target date</span></div>
+                        <div class="promise-card-actions">
+                            <form th:action="@{/promises/complete/{id}(id=${promise.id})}" method="post"><button class="button button-success button-small" type="submit"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>Complete</button></form>
+                            <form th:action="@{/promises/break/{id}(id=${promise.id})}" method="post" data-confirm="Mark this promise as broken?"><button class="button button-warning button-small" type="submit"><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg>Mark Broken</button></form>
+                            <a class="icon-button action-edit" th:href="@{/promises/edit/{id}(id=${promise.id})}" title="Edit"><svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg></a>
+                            <form th:action="@{/promises/delete/{id}(id=${promise.id})}" method="post" data-confirm="Delete this promise?"><button class="icon-button action-delete" type="submit" title="Delete"><svg class="icon"><use href="/images/ui-icons.svg#trash"></use></svg></button></form>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="promise-column promise-column-completed">
+                <header><span class="promise-column-icon"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg></span><div><h2>Completed</h2><p>Promises you kept</p></div></header>
+                <div class="promise-column-body">
+                    <article class="promise-card" th:each="promise : ${promises}" th:if="${promise.status.name() == 'COMPLETED'}">
+                        <div class="promise-card-top"><span class="status-pill status-completed">Completed</span><time th:text="${#temporals.format(promise.targetDate, 'dd MMM yyyy')}">Date</time></div>
+                        <h3 th:text="${promise.title}">Promise title</h3>
+                        <div class="promise-card-meta"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg><span>Commitment completed</span></div>
+                        <div class="promise-card-actions">
+                            <a class="icon-button action-edit" th:href="@{/promises/edit/{id}(id=${promise.id})}" title="Edit"><svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg></a>
+                            <form th:action="@{/promises/delete/{id}(id=${promise.id})}" method="post" data-confirm="Delete this promise?"><button class="icon-button action-delete" type="submit" title="Delete"><svg class="icon"><use href="/images/ui-icons.svg#trash"></use></svg></button></form>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="promise-column promise-column-broken">
+                <header><span class="promise-column-icon"><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg></span><div><h2>Broken</h2><p>Needs a new plan</p></div></header>
+                <div class="promise-column-body">
+                    <article class="promise-card" th:each="promise : ${promises}" th:if="${promise.status.name() == 'BROKEN'}">
+                        <div class="promise-card-top"><span class="status-pill status-broken">Broken</span><time th:text="${#temporals.format(promise.targetDate, 'dd MMM yyyy')}">Date</time></div>
+                        <h3 th:text="${promise.title}">Promise title</h3>
+                        <div class="promise-card-meta"><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg><span th:text="${promise.brokenCount + ' break record(s)'}">Break count</span></div>
+                        <div class="promise-card-actions">
+                            <a class="button button-blue button-small" th:href="@{/promises/edit/{id}(id=${promise.id})}"><svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg>Revise Plan</a>
+                            <form th:action="@{/promises/delete/{id}(id=${promise.id})}" method="post" data-confirm="Delete this promise?"><button class="icon-button action-delete" type="submit" title="Delete"><svg class="icon"><use href="/images/ui-icons.svg#trash"></use></svg></button></form>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

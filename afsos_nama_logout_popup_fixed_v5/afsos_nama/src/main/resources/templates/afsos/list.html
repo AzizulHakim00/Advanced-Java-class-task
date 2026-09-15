@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Afsos | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('afsos')}"></div>
+    <main class="app-main">
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <header class="workspace-header">
+            <div>
+                <span class="page-kicker">Reflection archive</span>
+                <h1>My Afsos</h1>
+                <p>Search, compare, and revisit the moments that shaped your semester.</p>
+            </div>
+            <a class="button button-coral" th:href="@{/afsos/new}">
+                <svg class="icon"><use href="/images/ui-icons.svg#plus"></use></svg>
+                Add Afsos
+            </a>
+        </header>
+
+        <section class="filter-panel">
+            <form class="filter-form" th:action="@{/afsos}" method="get">
+                <label class="search-field">
+                    <svg class="icon"><use href="/images/ui-icons.svg#search"></use></svg>
+                    <input type="search" name="keyword" th:value="${keyword}" placeholder="Search title, description or course">
+                </label>
+                <div class="select-field">
+                    <svg class="icon"><use href="/images/ui-icons.svg#filter"></use></svg>
+                    <select name="category">
+                        <option value="">All categories</option>
+                        <option th:each="category : ${categories}" th:value="${category}" th:text="${category.label}" th:selected="${selectedCategory == category}">Category</option>
+                    </select>
+                </div>
+                <div class="select-field">
+                    <svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg>
+                    <select name="level">
+                        <option value="">All levels</option>
+                        <option th:each="level : ${levels}" th:value="${level}" th:text="${level.label}" th:selected="${selectedLevel == level}">Level</option>
+                    </select>
+                </div>
+                <button class="button button-blue" type="submit">
+                    <svg class="icon"><use href="/images/ui-icons.svg#filter"></use></svg>
+                    Apply Filters
+                </button>
+                <a class="button button-ghost" th:href="@{/afsos}">Reset</a>
+            </form>
+            <div class="active-filter-row"
+                 th:if="${(keyword != null && !keyword.isBlank()) || selectedCategory != null || selectedLevel != null}">
+                <span class="active-filter-label">Active filters</span>
+                <a class="active-filter-chip chip-blue" th:if="${keyword != null && !keyword.isBlank()}"
+                   th:href="@{/afsos(category=${selectedCategory},level=${selectedLevel})}">
+                    <span>Search:</span><strong th:text="${keyword}">query</strong><b aria-hidden="true">x</b>
+                </a>
+                <a class="active-filter-chip chip-cyan" th:if="${selectedCategory != null}"
+                   th:href="@{/afsos(keyword=${keyword},level=${selectedLevel})}">
+                    <span>Category:</span><strong th:text="${selectedCategory.label}">Category</strong><b aria-hidden="true">x</b>
+                </a>
+                <a class="active-filter-chip chip-coral" th:if="${selectedLevel != null}"
+                   th:href="@{/afsos(keyword=${keyword},category=${selectedCategory})}">
+                    <span>Level:</span><strong th:text="${selectedLevel.label}">Level</strong><b aria-hidden="true">x</b>
+                </a>
+            </div>
+        </section>
+
+        <section class="afsos-summary-strip">
+            <div>
+                <span class="summary-symbol summary-blue"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+                <span><strong th:text="${#lists.size(afsosList)}">0</strong><small>Visible reflections</small></span>
+            </div>
+            <div>
+                <span class="summary-symbol summary-coral"><svg class="icon"><use href="/images/ui-icons.svg#trend"></use></svg></span>
+                <span><strong>Clear view</strong><small>Sorted by newest first</small></span>
+            </div>
+            <a th:href="@{/afsos/timeline}">
+                Open timeline
+                <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+            </a>
+        </section>
+
+        <section class="empty-page-state" th:if="${#lists.isEmpty(afsosList)}">
+            <span class="empty-page-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+            <h2>No matching Afsos</h2>
+            <p>Try different filters or record a new reflection.</p>
+            <a class="button button-coral" th:href="@{/afsos/new}">Add Afsos</a>
+        </section>
+
+        <section class="afsos-card-grid" th:unless="${#lists.isEmpty(afsosList)}">
+            <article class="afsos-card" th:each="afsos,stat : ${afsosList}" th:classappend="${' card-accent-' + (stat.index % 4)}">
+                <div class="afsos-card-date">
+                    <strong th:text="${#temporals.format(afsos.regretDate, 'dd')}">30</strong>
+                    <span th:text="${#temporals.format(afsos.regretDate, 'MMM')}">Jul</span>
+                    <small th:text="${#temporals.format(afsos.regretDate, 'yyyy')}">2026</small>
+                </div>
+                <div class="afsos-card-body">
+                    <div class="afsos-card-heading">
+                        <span class="category-badge" th:text="${afsos.category.label}">Teacher Issue</span>
+                        <span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(afsos.status.name())}" th:text="${afsos.status.label}">Fixed</span>
+                    </div>
+                    <h2 th:text="${afsos.title}">Sent the teacher the wrong file</h2>
+                    <p th:text="${#strings.abbreviate(afsos.description, 150)}">Description</p>
+                    <div class="afsos-meta-row">
+                        <span>
+                            <svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg>
+                            <span th:text="${afsos.relatedCourse != null && !afsos.relatedCourse.isBlank() ? afsos.relatedCourse : 'General semester'}">Course</span>
+                        </span>
+                        <span class="level-tag" th:classappend="${' level-' + #strings.toLowerCase(afsos.level.name())}" th:text="${afsos.level.label}">Level</span>
+                    </div>
+                </div>
+                <div class="afsos-card-actions">
+                    <a class="icon-button action-view" th:href="@{/afsos/details/{id}(id=${afsos.id})}" aria-label="View details" title="View details">
+                        <svg class="icon"><use href="/images/ui-icons.svg#eye"></use></svg>
+                    </a>
+                    <a class="icon-button action-edit" th:href="@{/afsos/edit/{id}(id=${afsos.id})}" aria-label="Edit Afsos" title="Edit">
+                        <svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg>
+                    </a>
+                    <form th:action="@{/afsos/delete/{id}(id=${afsos.id})}" method="post" data-confirm="Delete this Afsos permanently?">
+                        <button class="icon-button action-delete" type="submit" aria-label="Delete Afsos" title="Delete">
+                            <svg class="icon"><use href="/images/ui-icons.svg#trash"></use></svg>
+                        </button>
+                    </form>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

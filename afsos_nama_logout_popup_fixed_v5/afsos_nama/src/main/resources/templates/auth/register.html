@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Create Account | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body class="auth-body auth-register-body">
+<main class="auth-layout auth-register-layout">
+    <section class="auth-showcase register-showcase">
+        <div class="auth-showcase-shape auth-shape-one"></div>
+        <div class="auth-showcase-shape auth-shape-two"></div>
+        <a class="auth-brand" th:href="@{/login}"><img th:src="@{/images/brand-logo.svg}" alt="Afsos Nama"><span><strong>Afsos Nama</strong><small>Reflect · Learn · Improve</small></span></a>
+        <div class="register-showcase-copy">
+            <span class="auth-kicker">Build your reflection system</span>
+            <h1>Start the semester with a place for honest learning.</h1>
+            <div class="register-benefits">
+                <div><span class="benefit-number benefit-blue">01</span><p><strong>Record the real situation</strong><small>Capture context, impact, and consequences.</small></p></div>
+                <div><span class="benefit-number benefit-coral">02</span><p><strong>See patterns visually</strong><small>Understand categories and repeated behavior.</small></p></div>
+                <div><span class="benefit-number benefit-amber">03</span><p><strong>Make practical promises</strong><small>Turn lessons into clear commitments.</small></p></div>
+            </div>
+        </div>
+        <div class="register-visual-stack">
+            <div class="register-mini-card card-blue"><span><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span><div><strong>24</strong><small>Total Afsos</small></div></div>
+            <div class="register-mini-card card-coral"><span><svg class="icon"><use href="/images/ui-icons.svg#trend"></use></svg></span><div><strong>72</strong><small>Survival score</small></div></div>
+            <div class="register-mini-card card-amber"><span><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span><div><strong>4</strong><small>Active promises</small></div></div>
+        </div>
+    </section>
+
+    <section class="auth-panel register-panel">
+        <div class="auth-panel-inner register-panel-inner">
+            <div class="auth-mobile-brand"><img th:src="@{/images/brand-logo.svg}" alt=""><span>Afsos Nama</span></div>
+            <div class="auth-heading"><span class="page-kicker">Student registration</span><h2>Create your account</h2><p>Set up the basics. You can complete your profile later.</p></div>
+
+            <form class="auth-form register-form" th:action="@{/register}" th:object="${registrationDTO}" method="post">
+                <div class="form-grid form-grid-2">
+                    <div class="form-field full-field"><label for="regName"><span>Full name</span><small>Required</small></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#user"></use></svg><input id="regName" type="text" th:field="*{name}" placeholder="Your full name" maxlength="100"></div><span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</span></div>
+                    <div class="form-field full-field"><label for="regEmail"><span>Email address</span><small>Required</small></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#mail"></use></svg><input id="regEmail" type="email" th:field="*{email}" placeholder="student@example.com" maxlength="150"></div><span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</span></div>
+                    <div class="form-field"><label for="regPassword"><span>Password</span><small>Minimum 6 characters</small></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#lock"></use></svg><input id="regPassword" type="password" th:field="*{password}" placeholder="Create password" maxlength="100"><button class="password-toggle" type="button" data-password-toggle="regPassword" aria-label="Show password"><svg class="icon"><use href="/images/ui-icons.svg#eye"></use></svg></button></div><span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</span></div>
+                    <div class="form-field"><label for="confirmPassword"><span>Confirm password</span><small>Required</small></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#key"></use></svg><input id="confirmPassword" type="password" th:field="*{confirmPassword}" placeholder="Repeat password"><button class="password-toggle" type="button" data-password-toggle="confirmPassword" aria-label="Show password"><svg class="icon"><use href="/images/ui-icons.svg#eye"></use></svg></button></div><span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Confirmation error</span></div>
+                </div>
+
+                <div class="register-academic-group">
+                    <span class="register-group-label"><svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg>Academic information <small>Optional</small></span>
+                    <div class="form-grid form-grid-2">
+                        <div class="form-field full-field"><label for="regUniversity"><span>University</span></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg><input id="regUniversity" type="text" th:field="*{university}" placeholder="Your university" maxlength="150"></div><span class="field-error" th:if="${#fields.hasErrors('university')}" th:errors="*{university}">University error</span></div>
+                        <div class="form-field"><label for="regDepartment"><span>Department</span></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg><input id="regDepartment" type="text" th:field="*{department}" placeholder="Department" maxlength="100"></div><span class="field-error" th:if="${#fields.hasErrors('department')}" th:errors="*{department}">Department error</span></div>
+                        <div class="form-field"><label for="regSemester"><span>Current semester</span></label><div class="input-shell auth-input-shell"><svg class="icon"><use href="/images/ui-icons.svg#timeline"></use></svg><input id="regSemester" type="text" th:field="*{currentSemester}" placeholder="Example: 6th Semester" maxlength="50"></div><span class="field-error" th:if="${#fields.hasErrors('currentSemester')}" th:errors="*{currentSemester}">Semester error</span></div>
+                    </div>
+                </div>
+
+                <button class="button button-blue auth-submit" type="submit">Create Account<svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg></button>
+            </form>
+            <p class="auth-switch">Already have an account? <a th:href="@{/login}">Sign in</a></p>
+        </div>
+    </section>
+</main>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

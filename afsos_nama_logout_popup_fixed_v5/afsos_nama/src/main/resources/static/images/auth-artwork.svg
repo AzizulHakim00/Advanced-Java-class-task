@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-labelledby="t d">
+  <title id="t">Student reflection artwork</title>
+  <desc id="d">A vibrant abstract composition of a journal, path, charts and learning symbols.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071A33"/><stop offset="1" stop-color="#102A56"/></linearGradient>
+    <linearGradient id="orb" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#2563EB"/><stop offset="1" stop-color="#5B8CFF"/></linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFC247"/><stop offset="1" stop-color="#FF7A59"/></linearGradient>
+    <filter id="blur"><feGaussianBlur stdDeviation="26"/></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000" flood-opacity=".24"/></filter>
+  </defs>
+  <rect width="720" height="720" rx="48" fill="url(#bg)"/>
+  <circle cx="620" cy="80" r="130" fill="#6D5DFB" opacity=".3" filter="url(#blur)"/>
+  <circle cx="120" cy="580" r="160" fill="#FF6B57" opacity=".22" filter="url(#blur)"/>
+  <path d="M75 548C186 457 255 525 339 432s171-87 303-187" fill="none" stroke="#2C7BFF" stroke-width="7" stroke-linecap="round" stroke-dasharray="5 19"/>
+  <g filter="url(#shadow)">
+    <rect x="142" y="130" width="420" height="440" rx="34" fill="#fff"/>
+    <rect x="142" y="130" width="420" height="74" rx="34" fill="#F7F9FC"/>
+    <circle cx="184" cy="167" r="10" fill="#FF6B57"/><circle cx="214" cy="167" r="10" fill="#FFC247"/><circle cx="244" cy="167" r="10" fill="#10B981"/>
+    <rect x="184" y="238" width="128" height="118" rx="24" fill="url(#orb)"/>
+    <text x="207" y="286" font-family="Arial" font-size="18" font-weight="700" fill="#fff">SURVIVAL</text>
+    <text x="207" y="331" font-family="Arial" font-size="42" font-weight="800" fill="#fff">72</text>
+    <rect x="334" y="238" width="186" height="118" rx="24" fill="#FFF1ED"/>
+    <path d="M360 322c25-46 45-17 69-45s45 5 67-24" fill="none" stroke="#FF6B57" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="360" cy="322" r="5" fill="#FF6B57"/><circle cx="429" cy="277" r="5" fill="#FF6B57"/><circle cx="496" cy="253" r="5" fill="#FF6B57"/>
+    <rect x="184" y="388" width="336" height="34" rx="17" fill="#EEF4FF"/>
+    <rect x="184" y="442" width="260" height="24" rx="12" fill="#E7ECF5"/>
+    <rect x="184" y="484" width="305" height="24" rx="12" fill="#E7ECF5"/>
+    <circle cx="502" cy="496" r="47" fill="url(#sun)"/>
+    <path d="M482 499l15 15 28-34" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#fff" opacity=".85">
+    <circle cx="90" cy="120" r="5"/><circle cx="606" cy="602" r="5"/><circle cx="630" cy="560" r="3"/><circle cx="92" cy="90" r="3"/>
+  </g>
+</svg>

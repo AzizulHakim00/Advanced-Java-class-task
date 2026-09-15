@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<th:block th:fragment="navigation(activePage)">
+    <aside class="app-sidebar" id="appSidebar">
+        <a class="brand" th:href="@{/dashboard}" aria-label="Afsos Nama dashboard">
+            <img class="brand-logo" th:src="@{/images/brand-logo.svg}" alt="Afsos Nama">
+            <span class="brand-copy">
+                <strong>Afsos Nama</strong>
+                <small>Reflect · Learn · Improve</small>
+            </span>
+        </a>
+
+        <nav class="sidebar-navigation" aria-label="Primary navigation">
+            <div class="nav-group">
+                <span class="nav-label">Overview</span>
+                <a class="nav-link nav-tone-blue" th:href="@{/dashboard}"
+                   th:classappend="${activePage == 'dashboard'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#dashboard"></use></svg>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-label">My Semester</span>
+                <a class="nav-link nav-tone-coral" th:href="@{/afsos}"
+                   th:classappend="${activePage == 'afsos'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#book"></use></svg>
+                    <span>My Afsos</span>
+                </a>
+                <a class="nav-link nav-tone-violet" th:href="@{/afsos/timeline}"
+                   th:classappend="${activePage == 'timeline'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#timeline"></use></svg>
+                    <span>Timeline</span>
+                </a>
+                <a class="nav-link nav-tone-amber" th:href="@{/promises}"
+                   th:classappend="${activePage == 'promises'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#target"></use></svg>
+                    <span>Promises</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-label">Explore</span>
+                <a class="nav-link nav-tone-green" th:href="@{/confessions}"
+                   th:classappend="${activePage == 'confessions'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#messages"></use></svg>
+                    <span>Confessions</span>
+                </a>
+                <a class="nav-link nav-tone-cyan" th:href="@{/afsos/report}"
+                   th:classappend="${activePage == 'report'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#report"></use></svg>
+                    <span>Semester Report</span>
+                </a>
+            </div>
+
+            <div class="nav-group">
+                <span class="nav-label">Account</span>
+                <a class="nav-link nav-tone-violet" th:href="@{/profile}"
+                   th:classappend="${activePage == 'profile'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#user"></use></svg>
+                    <span>Profile</span>
+                </a>
+                <a class="nav-link nav-tone-coral" th:if="${isAdmin}" th:href="@{/admin}"
+                   th:classappend="${activePage == 'admin'} ? ' is-active' : ''">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#shield"></use></svg>
+                    <span>Admin Panel</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <form id="logoutForm" class="sidebar-logout-form" th:action="@{/logout}" method="post">
+                <button class="sidebar-logout-button" type="button" data-open-logout-modal>Log out</button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="logout-modal" id="logoutModal" hidden aria-hidden="true">
+        <div class="logout-modal-card" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle" aria-describedby="logoutModalMessage">
+            <div class="logout-modal-accent" aria-hidden="true"></div>
+            <h2 id="logoutModalTitle">Log out?</h2>
+            <p id="logoutModalMessage">Are you sure you want to log out?</p>
+            <div class="logout-modal-actions">
+                <button class="logout-modal-cancel" type="button" data-close-logout-modal>Cancel</button>
+                <button class="logout-modal-confirm" type="button" data-confirm-logout>Log out</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="mobile-header">
+        <a class="mobile-brand" th:href="@{/dashboard}">
+            <img th:src="@{/images/brand-logo.svg}" alt="">
+            <span>Afsos Nama</span>
+        </a>
+        <button class="icon-button mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation" aria-controls="appSidebar" aria-expanded="false">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#menu"></use></svg>
+        </button>
+    </header>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+        <a th:href="@{/dashboard}" th:classappend="${activePage == 'dashboard'} ? ' is-active' : ''">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#dashboard"></use></svg>
+            <span>Home</span>
+        </a>
+        <a th:href="@{/afsos}" th:classappend="${activePage == 'afsos'} ? ' is-active' : ''">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#book"></use></svg>
+            <span>Afsos</span>
+        </a>
+        <a class="mobile-add" th:href="@{/afsos/new}" aria-label="Add Afsos">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#plus"></use></svg>
+        </a>
+        <a th:href="@{/promises}" th:classappend="${activePage == 'promises'} ? ' is-active' : ''">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#target"></use></svg>
+            <span>Promises</span>
+        </a>
+        <button type="button" data-mobile-more>
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#more"></use></svg>
+            <span>More</span>
+        </button>
+    </nav>
+</th:block>
+</body>
+</html>

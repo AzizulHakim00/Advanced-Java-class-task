@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Satellite Mission Tracker</title>
+
+    <link rel="stylesheet"
+          th:href="@{/css/mission.css}">
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <div class="header-content">
+
+        <span class="satellite-icon">
+
+            <svg viewBox="0 0 64 64"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true">
+
+                <circle cx="32"
+                        cy="32"
+                        r="11"
+                        class="planet-core"/>
+
+                <ellipse cx="32"
+                         cy="32"
+                         rx="25"
+                         ry="10"
+                         class="orbit-ring"
+                         transform="rotate(-20 32 32)"/>
+
+                <circle cx="51"
+                        cy="23"
+                        r="3"
+                        class="orbit-dot"/>
+
+            </svg>
+
+        </span>
+
+
+        <h1>
+            Satellite Mission Tracker
+        </h1>
+
+    </div>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <!-- ================= METRICS ================= -->
+
+    <section class="metrics">
+
+
+        <div class="metric">
+
+            <strong th:text="${metrics != null ? metrics.totalMission : 0}">
+                0
+            </strong>
+
+            <span>
+                Total Missions
+            </span>
+
+        </div>
+
+
+
+        <div class="metric">
+
+            <strong th:text="${metrics != null ? metrics.activeOrbit : 0}">
+                0
+            </strong>
+
+            <span>
+                Active Orbiting
+            </span>
+
+        </div>
+
+
+
+        <div class="metric">
+
+            <strong th:text="${metrics != null ? metrics.plannedMission : 0}">
+                0
+            </strong>
+
+            <span>
+                Planned Missions
+            </span>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= SUCCESS MESSAGE ================= -->
+
+    <div th:if="${successMessage}"
+         class="success-message"
+         th:text="${successMessage}">
+    </div>
+
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+
+    <section class="content">
+
+
+        <!-- ================= FORM ================= -->
+
+        <div class="form-card">
+
+
+            <div class="card-title">
+
+                <h2 id="formTitle">
+                    Add New Mission
+                </h2>
+
+            </div>
+
+
+
+            <form id="missionForm"
+                  th:action="@{/mission/save}"
+                  method="post">
+
+
+                <input type="hidden"
+                       id="missionId"
+                       name="id">
+
+
+
+                <label for="name">
+                    Mission Name
+                </label>
+
+                <input type="text"
+                       id="name"
+                       name="name"
+                       placeholder="Enter mission name"
+                       required>
+
+
+
+                <label for="agency">
+                    Agency
+                </label>
+
+                <input type="text"
+                       id="agency"
+                       name="agency"
+                       placeholder="Enter agency"
+                       required>
+
+
+
+                <label for="date">
+                    Launch Date
+                </label>
+
+                <input type="date"
+                       id="date"
+                       name="date"
+                       required>
+
+
+
+                <label for="orbit">
+                    Orbit
+                </label>
+
+                <select id="orbit"
+                        name="orbit"
+                        required>
+
+                    <option value="">
+                        Select Orbit
+                    </option>
+
+                    <option value="LEO">
+                        LEO
+                    </option>
+
+                    <option value="MEO">
+                        MEO
+                    </option>
+
+                    <option value="GEO">
+                        GEO
+                    </option>
+
+                    <option value="DEEP_SPACE">
+                        Deep Space
+                    </option>
+
+                </select>
+
+
+
+                <label for="status">
+                    Status
+                </label>
+
+                <select id="status"
+                        name="status"
+                        required>
+
+                    <option value="">
+                        Select Status
+                    </option>
+
+                    <option value="ACTIVE">
+                        Active
+                    </option>
+
+                    <option value="PLANNED">
+                        Planned
+                    </option>
+
+                    <option value="DECOMMISSIONED">
+                        Decommissioned
+                    </option>
+
+                </select>
+
+
+
+                <button type="submit"
+                        id="submitBtn"
+                        class="save-btn">
+
+                    Save Mission
+
+                </button>
+
+
+
+                <button type="button"
+                        id="cancelBtn"
+                        class="cancel-btn hidden"
+                        onclick="cancelEdit()">
+
+                    Cancel Edit
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+
+        <!-- ================= MISSION LIST ================= -->
+
+        <div class="list-card">
+
+
+            <div class="list-header">
+
+
+                <h2>
+                    Missions List
+                </h2>
+
+
+
+                <form class="search"
+                      th:action="@{/mission}"
+                      method="get">
+
+
+                    <input type="search"
+                           name="search"
+                           th:value="${search}"
+                           placeholder="Search mission...">
+
+
+                    <button type="submit">
+                        Search
+                    </button>
+
+
+                </form>
+
+
+            </div>
+
+
+
+            <div class="table-wrap">
+
+
+                <table>
+
+
+                    <thead>
+
+                    <tr>
+
+                        <th>
+                            Mission Name
+                        </th>
+
+                        <th>
+                            Agency
+                        </th>
+
+                        <th>
+                            Launch Date
+                        </th>
+
+                        <th>
+                            Orbit
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                    <!-- ================= MISSIONS ================= -->
+
+                    <tr th:each="mission : ${missions}">
+
+
+                        <td class="mission-name"
+                            th:text="${mission.name}">
+
+                            Hubble Telescope
+
+                        </td>
+
+
+
+                        <td th:text="${mission.agency}">
+
+                            NASA / ESA
+
+                        </td>
+
+
+
+                        <td th:text="${mission.date}">
+
+                            1990-04-24
+
+                        </td>
+
+
+
+                        <td>
+
+                            <span class="orbit"
+
+                                  th:text="${mission.orbit != null &&
+                                  mission.orbit.name() == 'DEEP_SPACE'
+                                  ? 'Deep Space'
+                                  : mission.orbit}">
+
+                                LEO
+
+                            </span>
+
+                        </td>
+
+
+
+                        <td>
+
+                            <span class="status"
+
+                                  th:classappend="${mission.status != null
+                                  ? ' ' + #strings.toLowerCase(mission.status.name())
+                                  : ''}"
+
+                                  th:text="${mission.status != null
+                                  ? #strings.capitalize(
+                                  #strings.toLowerCase(mission.status.name()))
+                                  : ''}">
+
+                                Active
+
+                            </span>
+
+                        </td>
+
+
+
+                        <td class="actions">
+
+
+                            <!-- EDIT -->
+
+                            <button type="button"
+                                    class="edit-btn"
+
+                                    th:data-id="${mission.id}"
+
+                                    th:data-name="${mission.name}"
+
+                                    th:data-agency="${mission.agency}"
+
+                                    th:data-date="${mission.date}"
+
+                                    th:data-orbit="${mission.orbit}"
+
+                                    th:data-status="${mission.status}"
+
+                                    onclick="editMission(this)">
+
+                                Edit
+
+                            </button>
+
+
+
+                            <!-- DELETE -->
+
+                            <form th:action="@{/mission/delete/{id}(id=${mission.id})}"
+                                  method="post"
+                                  onsubmit="return confirmDelete(this)">
+
+
+                                <button type="submit"
+                                        class="delete-btn">
+
+                                    Delete
+
+                                </button>
+
+
+                            </form>
+
+
+                        </td>
+
+
+                    </tr>
+
+
+
+                    <!-- ================= EMPTY LIST ================= -->
+
+                    <tr th:if="${missions == null or #lists.isEmpty(missions)}">
+
+
+                        <td colspan="6"
+                            class="empty">
+
+                            No missions found.
+
+                        </td>
+
+
+                    </tr>
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ================= DELETE MODAL ================= -->
+
+<div id="deleteModal"
+     class="modal">
+
+
+    <div class="modal-box">
+
+
+        <div class="warning-icon">
+
+            !
+
+        </div>
+
+
+        <h3>
+            Delete Mission?
+        </h3>
+
+
+        <p>
+
+            Are you sure you want to delete this mission?
+
+            This action cannot be undone.
+
+        </p>
+
+
+
+        <div class="modal-actions">
+
+
+            <button type="button"
+                    class="modal-cancel"
+                    onclick="closeDeleteModal()">
+
+                Cancel
+
+            </button>
+
+
+
+            <button type="button"
+                    class="modal-delete"
+                    onclick="confirmMissionDelete()">
+
+                Delete Mission
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- ================= JAVASCRIPT ================= -->
+
+<script th:src="@{/js/mission.js}"></script>
+
+
+</body>
+
+</html>

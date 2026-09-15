@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semester Report | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('report')}"></div>
+    <main class="app-main report-main">
+        <header class="report-cover">
+            <div class="report-cover-brand"><img th:src="@{/images/brand-logo.svg}" alt=""><span>Afsos Nama</span></div>
+            <div class="report-cover-copy">
+                <span>Semester reflection report</span>
+                <h1 th:text="${currentUser.currentSemester != null && !currentUser.currentSemester.isBlank() ? currentUser.currentSemester : 'Current Semester'}">Current Semester</h1>
+                <p>A visual summary of patterns, impact, promises, and recorded lessons.</p>
+            </div>
+            <div class="report-score" th:style="${'--score:' + reportData.survivalScore}">
+                <div><strong th:text="${reportData.survivalScore}">72</strong><span>Survival score</span></div>
+                <small th:text="${reportData.survivalStatus}">Slightly damaged</small>
+            </div>
+        </header>
+
+        <section class="report-highlight-grid">
+            <article class="report-highlight highlight-blue"><span><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span><div><strong th:text="${reportData.totalAfsos}">0</strong><small>Total Afsos</small></div></article>
+            <article class="report-highlight highlight-coral"><span><svg class="icon"><use href="/images/ui-icons.svg#trend"></use></svg></span><div><strong th:text="${reportData.thisWeek}">0</strong><small>Added this week</small></div></article>
+            <article class="report-highlight highlight-amber"><span><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span><div><strong th:text="${reportData.activePromises}">0</strong><small>Active promises</small></div></article>
+            <article class="report-highlight highlight-navy"><span><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg></span><div><strong th:text="${reportData.brokenPromises}">0</strong><small>Broken promises</small></div></article>
+        </section>
+
+        <section class="report-content-grid">
+            <article class="report-section report-pattern-section">
+                <header><span class="section-kicker">Pattern analysis</span><h2>Category Distribution</h2></header>
+                <div class="empty-visual" th:if="${reportData.categoryBreakdown.isEmpty()}"><p>No category data yet.</p></div>
+                <div class="report-category-layout" th:unless="${reportData.categoryBreakdown.isEmpty()}" data-category-chart>
+                    <div class="donut-chart report-donut" data-donut-chart><div class="donut-center"><strong th:text="${reportData.totalAfsos}">0</strong><span>Entries</span></div></div>
+                    <div class="report-bars" data-chart-items>
+                        <div class="report-bar" th:each="entry,stat : ${reportData.categoryBreakdown}" th:attr="data-value=${entry.value},data-index=${stat.index}">
+                            <div><span class="legend-dot"></span><strong th:text="${entry.key}">Category</strong><b th:text="${entry.value}">0</b></div>
+                            <span class="report-bar-track"><i th:style="${'width:' + ((entry.value * 100) / reportData.totalAfsos) + '%'}"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="report-section report-findings-section">
+                <header><span class="section-kicker">Key findings</span><h2>Semester Signals</h2></header>
+                <dl class="finding-list">
+                    <div><dt>Most common category</dt><dd th:text="${reportData.mostCommonCategory}">No data</dd></div>
+                    <div><dt>Highest impact level</dt><dd th:text="${reportData.highestLevel}">No data</dd></div>
+                    <div><dt>Current condition</dt><dd th:text="${reportData.survivalStatus}">Safe</dd></div>
+                </dl>
+                <div class="finding-alert" th:if="${!#strings.isEmpty(reportData.repeatedWarning)}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#alert"></use></svg>
+                    <p th:text="${reportData.repeatedWarning}">Repeated warning</p>
+                </div>
+                <div class="finding-message" th:unless="${!#strings.isEmpty(reportData.repeatedWarning)}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>
+                    <p>No repeated category has crossed the warning threshold yet.</p>
+                </div>
+            </article>
+        </section>
+
+        <section class="report-history">
+            <div class="report-history-header"><div><span class="section-kicker">Reflection archive</span><h2>Semester History</h2></div><a class="inline-link" th:href="@{/afsos/timeline}">Open visual timeline<svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg></a></div>
+            <div class="empty-page-state compact" th:if="${#lists.isEmpty(afsosList)}"><p>No Afsos entries to report.</p></div>
+            <div class="report-history-list" th:unless="${#lists.isEmpty(afsosList)}">
+                <a th:each="afsos,stat : ${afsosList}" th:href="@{/afsos/details/{id}(id=${afsos.id})}" th:classappend="${' history-accent-' + (stat.index % 4)}">
+                    <time><strong th:text="${#temporals.format(afsos.regretDate, 'dd')}">30</strong><span th:text="${#temporals.format(afsos.regretDate, 'MMM yyyy')}">Jul 2026</span></time>
+                    <span class="history-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+                    <span class="history-copy"><strong th:text="${afsos.title}">Title</strong><small><span th:text="${afsos.category.label}">Category</span> · <span th:text="${afsos.level.label}">Level</span></small></span>
+                    <span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(afsos.status.name())}" th:text="${afsos.status.label}">Status</span>
+                    <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                </a>
+            </div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

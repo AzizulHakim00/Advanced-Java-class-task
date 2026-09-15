@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('admin')}"></div>
+    <main class="app-main">
+        <div th:replace="~{fragments/messages :: messages}"></div>
+        <header class="workspace-header"><div><span class="page-kicker">Administration</span><h1>Admin Panel</h1><p>Review anonymous submissions and manage student accounts.</p></div></header>
+
+        <section class="dashboard-metrics admin-metrics">
+            <article class="metric-card metric-blue"><div class="metric-card-top"><span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#users"></use></svg></span><span class="metric-chip">Accounts</span></div><strong th:text="${totalUsers}">0</strong><h2>Total Users</h2><p>Registered student and admin accounts.</p><span class="metric-art metric-art-circle"></span></article>
+            <article class="metric-card metric-coral"><div class="metric-card-top"><span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span><span class="metric-chip">Platform</span></div><strong th:text="${totalAfsos}">0</strong><h2>Total Afsos</h2><p>Reflections across all users.</p><span class="metric-art metric-art-bars"></span></article>
+            <article class="metric-card metric-amber"><div class="metric-card-top"><span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#messages"></use></svg></span><span class="metric-chip">Moderation</span></div><strong th:text="${pendingCount}">0</strong><h2>Pending Confessions</h2><p>Anonymous posts waiting for review.</p><span class="metric-art metric-art-target"></span></article>
+        </section>
+
+        <section class="admin-layout">
+            <article class="panel moderation-panel">
+                <div class="panel-heading"><div><span class="section-kicker">Moderation queue</span><h2>Pending Confessions</h2></div><span class="queue-count" th:text="${pendingCount}">0</span></div>
+                <div class="empty-visual compact" th:if="${#lists.isEmpty(pendingConfessions)}"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg><p>No confession is waiting for approval.</p></div>
+                <div class="moderation-list" th:unless="${#lists.isEmpty(pendingConfessions)}">
+                    <article class="moderation-card" th:each="afsos,stat : ${pendingConfessions}" th:classappend="${' moderation-accent-' + (stat.index % 4)}">
+                        <header><span class="anonymous-avatar"><svg class="icon"><use href="/images/ui-icons.svg#messages"></use></svg></span><div><strong th:text="${afsos.title}">Title</strong><span>Submitted by <b th:text="${afsos.user.name}">Student</b></span></div></header>
+                        <p th:text="${afsos.description}">Description</p>
+                        <div class="moderation-tags"><span class="category-badge" th:text="${afsos.category.label}">Category</span><span class="level-tag" th:classappend="${' level-' + #strings.toLowerCase(afsos.level.name())}" th:text="${afsos.level.label}">Level</span></div>
+                        <footer>
+                            <form th:action="@{/admin/confessions/{id}/approve(id=${afsos.id})}" method="post"><button class="button button-success button-small" type="submit"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>Approve</button></form>
+                            <form th:action="@{/admin/confessions/{id}/hide(id=${afsos.id})}" method="post" data-confirm="Reject this confession?"><button class="button button-danger button-small" type="submit"><svg class="icon"><use href="/images/ui-icons.svg#x"></use></svg>Reject</button></form>
+                        </footer>
+                    </article>
+                </div>
+            </article>
+
+            <article class="panel admin-users-panel">
+                <div class="panel-heading"><div><span class="section-kicker">Account control</span><h2>Registered Users</h2></div></div>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead><tr><th>User</th><th>Academic Info</th><th>Role</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody>
+                        <tr th:each="user : ${users}">
+                            <td><div class="admin-user-cell"><span class="profile-avatar" th:text="${#strings.substring(user.name,0,1)}">S</span><span><strong th:text="${user.name}">Name</strong><small th:text="${user.email}">Email</small></span></div></td>
+                            <td><div class="admin-academic-cell"><strong th:text="${user.university != null ? user.university : 'University not set'}">University</strong><small><span th:text="${user.department != null ? user.department : 'Department not set'}">Department</span> · <span th:text="${user.currentSemester != null ? user.currentSemester : 'Semester not set'}">Semester</span></small></div></td>
+                            <td><span class="role-badge" th:text="${user.role}">STUDENT</span></td>
+                            <td><span class="status-pill" th:classappend="${user.enabled ? ' status-active' : ' status-disabled'}" th:text="${user.enabled ? 'Active' : 'Disabled'}">Active</span></td>
+                            <td>
+                                <form th:if="${user.role.name() != 'ADMIN'}" th:action="@{/admin/users/{id}/toggle(id=${user.id})}" method="post" data-confirm="Change this user's account status?">
+                                    <button class="button button-small" th:classappend="${user.enabled ? ' button-danger-soft' : ' button-success'}" type="submit" th:text="${user.enabled ? 'Disable' : 'Enable'}">Disable</button>
+                                </form>
+                                <span class="protected-label" th:if="${user.role.name() == 'ADMIN'}"><svg class="icon"><use href="/images/ui-icons.svg#shield"></use></svg>Protected</span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

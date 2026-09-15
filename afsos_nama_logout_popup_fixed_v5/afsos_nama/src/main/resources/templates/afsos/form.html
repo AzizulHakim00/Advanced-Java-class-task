@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${(afsosDTO.id == null ? 'Add Afsos' : 'Edit Afsos') + ' | Afsos Nama'}">Afsos Form</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('afsos')}"></div>
+    <main class="app-main form-page-main">
+        <a class="back-navigation" th:href="@{/afsos}">
+            <svg class="icon"><use href="/images/ui-icons.svg#arrow-left"></use></svg>
+            Back to My Afsos
+        </a>
+
+        <header class="workspace-header form-workspace-header">
+            <div>
+                <span class="page-kicker" th:text="${afsosDTO.id == null ? 'New reflection' : 'Update reflection'}">New reflection</span>
+                <h1 th:text="${afsosDTO.id == null ? 'Record an Afsos' : 'Edit this Afsos'}">Record an Afsos</h1>
+                <p>Capture the incident, add its context, and finish with the lesson.</p>
+            </div>
+            <div class="form-progress-summary">
+                <span><strong>3</strong> clear sections</span>
+                <span><strong>1</strong> useful reflection</span>
+            </div>
+        </header>
+
+        <form class="reflection-form" th:action="@{/afsos/save}" th:object="${afsosDTO}" method="post" novalidate>
+            <input type="hidden" th:field="*{id}">
+
+            <aside class="form-roadmap">
+                <div class="form-roadmap-title">
+                    <span class="roadmap-logo"><img th:src="@{/images/brand-logo.svg}" alt=""></span>
+                    <div><strong>Entry map</strong><small>Complete each section</small></div>
+                </div>
+                <a href="#story" class="roadmap-step is-active"><span>01</span><div><strong>The Story</strong><small>What happened</small></div></a>
+                <a href="#context" class="roadmap-step"><span>02</span><div><strong>Academic Context</strong><small>Where it happened</small></div></a>
+                <a href="#reflection" class="roadmap-step"><span>03</span><div><strong>Reflection</strong><small>What changes next</small></div></a>
+                <div class="roadmap-tip">
+                    <svg class="icon"><use href="/images/ui-icons.svg#spark"></use></svg>
+                    <p>Be specific. Clear records produce better lessons.</p>
+                </div>
+            </aside>
+
+            <div class="form-sections">
+                <section class="form-section-card form-section-blue" id="story">
+                    <header class="form-section-header">
+                        <span class="form-section-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+                        <div><span>Section 01</span><h2>The Story</h2><p>Describe the incident clearly and choose its impact.</p></div>
+                    </header>
+
+                    <div class="form-field full-field">
+                        <label for="title"><span>Afsos title</span><small>Required</small></label>
+                        <div class="input-shell">
+                            <svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg>
+                            <input id="title" type="text" th:field="*{title}" placeholder="Example: Sent the wrong assignment file" maxlength="100">
+                        </div>
+                        <span class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</span>
+                    </div>
+
+                    <div class="form-field full-field">
+                        <label for="description"><span>Description</span><small>Required</small></label>
+                        <textarea id="description" th:field="*{description}" rows="5" maxlength="1000" placeholder="What happened? Include enough detail to understand the situation later."></textarea>
+                        <div class="field-footer"><span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Description error</span><span class="char-count" data-char-count-for="description">0 / 1000</span></div>
+                    </div>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-field">
+                            <label for="category"><span>Category</span><small>Required</small></label>
+                            <div class="select-shell">
+                                <svg class="icon"><use href="/images/ui-icons.svg#filter"></use></svg>
+                                <select id="category" th:field="*{category}">
+                                    <option value="">Select a category</option>
+                                    <option th:each="category : ${categories}" th:value="${category}" th:text="${category.label}">Category</option>
+                                </select>
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('category')}" th:errors="*{category}">Category error</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="level"><span>Afsos level</span><small>Required</small></label>
+                            <div class="select-shell">
+                                <svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg>
+                                <select id="level" th:field="*{level}">
+                                    <option value="">Select impact level</option>
+                                    <option th:each="level : ${levels}" th:value="${level}" th:text="${level.label}">Level</option>
+                                </select>
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('level')}" th:errors="*{level}">Level error</span>
+                        </div>
+
+                        <div class="form-field date-field" data-date-picker data-max-today="true">
+                            <label><span>Date</span><small>Cannot be future</small></label>
+                            <input type="hidden" th:field="*{regretDate}" data-date-input>
+                            <button class="date-input-button" type="button" data-date-trigger>
+                                <svg class="icon"><use href="/images/ui-icons.svg#calendar"></use></svg>
+                                <span data-date-display th:text="${afsosDTO.regretDate != null ? #temporals.format(afsosDTO.regretDate, 'dd MMMM yyyy') : 'Select a date'}">Select a date</span>
+                                <svg class="icon date-chevron"><use href="/images/ui-icons.svg#chevron-down"></use></svg>
+                            </button>
+                            <div class="custom-calendar" data-calendar hidden>
+                                <div class="calendar-header">
+                                    <button type="button" data-calendar-prev aria-label="Previous month"><svg class="icon"><use href="/images/ui-icons.svg#arrow-left"></use></svg></button>
+                                    <strong data-calendar-title>Month Year</strong>
+                                    <button type="button" data-calendar-next aria-label="Next month"><svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg></button>
+                                </div>
+                                <div class="calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+                                <div class="calendar-days" data-calendar-days></div>
+                                <div class="calendar-footer"><button type="button" data-calendar-today>Today</button><button type="button" data-calendar-clear>Clear</button></div>
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('regretDate')}" th:errors="*{regretDate}">Date error</span>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="status"><span>Current status</span><small>Required</small></label>
+                            <div class="select-shell">
+                                <svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg>
+                                <select id="status" th:field="*{status}">
+                                    <option value="">Select current status</option>
+                                    <option th:each="status : ${statuses}" th:value="${status}" th:text="${status.label}">Status</option>
+                                </select>
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status error</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section-card form-section-amber" id="context">
+                    <header class="form-section-header">
+                        <span class="form-section-icon"><svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg></span>
+                        <div><span>Section 02</span><h2>Academic Context</h2><p>Add the course, semester, and real consequence.</p></div>
+                    </header>
+
+                    <div class="form-grid form-grid-2">
+                        <div class="form-field">
+                            <label for="relatedCourse"><span>Related course</span><small>Optional</small></label>
+                            <div class="input-shell">
+                                <svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg>
+                                <input id="relatedCourse" type="text" th:field="*{relatedCourse}" placeholder="Example: Artificial Intelligence" maxlength="100">
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('relatedCourse')}" th:errors="*{relatedCourse}">Course error</span>
+                        </div>
+                        <div class="form-field">
+                            <label for="semester"><span>Semester</span><small>Optional</small></label>
+                            <div class="input-shell">
+                                <svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg>
+                                <input id="semester" type="text" th:field="*{semester}" placeholder="Example: 6th Semester" maxlength="50">
+                            </div>
+                            <span class="field-error" th:if="${#fields.hasErrors('semester')}" th:errors="*{semester}">Semester error</span>
+                        </div>
+                        <div class="form-field full-field">
+                            <label for="consequence"><span>Consequence</span><small>Optional</small></label>
+                            <textarea id="consequence" th:field="*{consequence}" rows="4" maxlength="500" placeholder="What happened because of this decision?"></textarea>
+                            <div class="field-footer"><span class="field-error" th:if="${#fields.hasErrors('consequence')}" th:errors="*{consequence}">Consequence error</span><span class="char-count" data-char-count-for="consequence">0 / 500</span></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="form-section-card form-section-coral" id="reflection">
+                    <header class="form-section-header">
+                        <span class="form-section-icon"><svg class="icon"><use href="/images/ui-icons.svg#spark"></use></svg></span>
+                        <div><span>Section 03</span><h2>Reflection & Sharing</h2><p>Write the lesson and decide whether to share anonymously.</p></div>
+                    </header>
+
+                    <div class="form-field full-field">
+                        <label for="lessonLearned"><span>Lesson learned</span><small>Optional</small></label>
+                        <textarea id="lessonLearned" th:field="*{lessonLearned}" rows="4" maxlength="500" placeholder="What will you do differently next time?"></textarea>
+                        <div class="field-footer"><span class="field-error" th:if="${#fields.hasErrors('lessonLearned')}" th:errors="*{lessonLearned}">Lesson error</span><span class="char-count" data-char-count-for="lessonLearned">0 / 500</span></div>
+                    </div>
+
+                    <div class="reflection-options reflection-options-single">
+                        <label class="share-option">
+                            <input type="checkbox" th:field="*{sharedAnonymously}">
+                            <span class="share-option-icon"><svg class="icon"><use href="/images/ui-icons.svg#messages"></use></svg></span>
+                            <span><strong>Share anonymously</strong><small>Send this to Campus Confessions for admin approval.</small></span>
+                            <span class="toggle-switch"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <footer class="form-actions-bar">
+                    <a class="button button-ghost" th:href="@{/afsos}">Cancel</a>
+                    <button class="button button-coral button-large" type="submit">
+                        <svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>
+                        <span th:text="${afsosDTO.id == null ? 'Save Afsos' : 'Update Afsos'}">Save Afsos</span>
+                    </button>
+                </footer>
+            </div>
+        </form>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

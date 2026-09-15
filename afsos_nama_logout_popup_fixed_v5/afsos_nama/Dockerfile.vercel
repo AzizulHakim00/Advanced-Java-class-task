@@ -1,0 +1,27 @@
+# Build the Spring Boot JAR
+FROM eclipse-temurin:26-jdk AS build
+
+WORKDIR /app
+
+COPY . .
+
+RUN chmod +x mvnw
+RUN ./mvnw clean package -DskipTests
+RUN cp target/*.jar /app/app.jar
+
+
+# Run the application
+FROM eclipse-temurin:26-jdk
+
+WORKDIR /app
+
+ENV JAVA_HOME=/opt/java/openjdk
+ENV PATH="/opt/java/openjdk/bin:${PATH}"
+
+COPY --from=build /app/app.jar /app/app.jar
+
+# Proves during build that Java really exists
+RUN /opt/java/openjdk/bin/java -version
+
+# Use the complete Java path—do not write only "java"
+CMD ["/opt/java/openjdk/bin/java", "-jar", "/app/app.jar"]

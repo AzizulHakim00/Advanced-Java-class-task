@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${(promiseDTO.id == null ? 'New Promise' : 'Edit Promise') + ' | Afsos Nama'}">Promise Form</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('promises')}"></div>
+    <main class="app-main">
+        <a class="back-navigation" th:href="@{/promises}"><svg class="icon"><use href="/images/ui-icons.svg#arrow-left"></use></svg>Back to Promises</a>
+        <section class="promise-form-layout">
+            <aside class="promise-form-visual">
+                <img th:src="@{/images/brand-logo.svg}" alt="">
+                <span>Commitment builder</span>
+                <h1 th:text="${promiseDTO.id == null ? 'Create a promise you can actually keep.' : 'Rewrite the promise into a better plan.'}">Create a promise</h1>
+                <p>Specific action, realistic date, clear outcome.</p>
+                <div class="promise-form-rules">
+                    <div><span>1</span><p><strong>Be specific</strong>Write one clear action.</p></div>
+                    <div><span>2</span><p><strong>Choose a real date</strong>Avoid impossible deadlines.</p></div>
+                    <div><span>3</span><p><strong>Track honestly</strong>Complete or mark it broken.</p></div>
+                </div>
+            </aside>
+
+            <form class="promise-form-card" th:action="@{/promises/save}" th:object="${promiseDTO}" method="post">
+                <input type="hidden" th:field="*{id}">
+                <header><span class="form-section-icon"><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span><div><span class="section-kicker" th:text="${promiseDTO.id == null ? 'New commitment' : 'Update commitment'}">New commitment</span><h2 th:text="${promiseDTO.id == null ? 'Promise details' : 'Edit promise details'}">Promise details</h2></div></header>
+
+                <div class="form-field full-field">
+                    <label for="promiseTitle"><span>Promise</span><small>Required</small></label>
+                    <textarea id="promiseTitle" th:field="*{title}" rows="4" maxlength="150" placeholder="Example: Submit the next assignment one day early"></textarea>
+                    <div class="field-footer"><span class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Title error</span><span class="char-count" data-char-count-for="promiseTitle">0 / 150</span></div>
+                </div>
+
+                <div class="form-grid form-grid-2">
+                    <div class="form-field date-field" data-date-picker data-min-today="true">
+                        <label><span>Target date</span><small>Required</small></label>
+                        <input type="hidden" th:field="*{targetDate}" data-date-input>
+                        <button class="date-input-button" type="button" data-date-trigger><svg class="icon"><use href="/images/ui-icons.svg#calendar"></use></svg><span data-date-display th:text="${promiseDTO.targetDate != null ? #temporals.format(promiseDTO.targetDate, 'dd MMMM yyyy') : 'Select a date'}">Select date</span><svg class="icon date-chevron"><use href="/images/ui-icons.svg#chevron-down"></use></svg></button>
+                        <div class="custom-calendar" data-calendar hidden><div class="calendar-header"><button type="button" data-calendar-prev aria-label="Previous month"><svg class="icon"><use href="/images/ui-icons.svg#arrow-left"></use></svg></button><strong data-calendar-title>Month Year</strong><button type="button" data-calendar-next aria-label="Next month"><svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg></button></div><div class="calendar-weekdays"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div><div class="calendar-days" data-calendar-days></div><div class="calendar-footer"><button type="button" data-calendar-today>Today</button><button type="button" data-calendar-clear>Clear</button></div></div>
+                        <span class="field-error" th:if="${#fields.hasErrors('targetDate')}" th:errors="*{targetDate}">Date error</span>
+                    </div>
+                    <div class="form-field">
+                        <label for="promiseStatus"><span>Status</span><small>Required</small></label>
+                        <div class="select-shell"><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg><select id="promiseStatus" th:field="*{status}"><option th:each="status : ${statuses}" th:value="${status}" th:text="${status.label}">Status</option></select></div>
+                        <span class="field-error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Status error</span>
+                    </div>
+                </div>
+
+                <div class="promise-example"><svg class="icon"><use href="/images/ui-icons.svg#spark"></use></svg><div><strong>Better:</strong> “Study Database Systems for 45 minutes every evening.”<br><strong>Avoid:</strong> “Study more.”</div></div>
+
+                <footer class="form-actions-bar"><a class="button button-ghost" th:href="@{/promises}">Cancel</a><button class="button button-coral button-large" type="submit"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>Save Promise</button></footer>
+            </form>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

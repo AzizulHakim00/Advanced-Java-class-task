@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Dashboard | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('dashboard')}"></div>
+
+    <main class="app-main">
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <header class="workspace-header">
+            <div>
+                <span class="page-kicker">Semester command center</span>
+                <h1>Good morning, <span th:text="${currentUser.name}">Student</span>.</h1>
+                <p>See your patterns clearly and decide what to improve next.</p>
+            </div>
+            <div class="workspace-actions">
+                <a class="button button-coral" th:href="@{/afsos/new}">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#plus"></use></svg>
+                    Record Afsos
+                </a>
+                <a class="button button-navy" th:href="@{/promises/new}">
+                    <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#target"></use></svg>
+                    New Promise
+                </a>
+            </div>
+        </header>
+
+        <section class="dashboard-metrics" aria-label="Semester summary">
+            <article class="metric-card metric-blue">
+                <div class="metric-card-top">
+                    <span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+                    <span class="metric-chip">All time</span>
+                </div>
+                <strong th:text="${dashboard.totalAfsos}">0</strong>
+                <h2>Total Afsos</h2>
+                <p>Reflections recorded this semester.</p>
+                <span class="metric-art metric-art-circle"></span>
+            </article>
+
+            <article class="metric-card metric-coral">
+                <div class="metric-card-top">
+                    <span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#trend"></use></svg></span>
+                    <span class="metric-chip">Last 7 days</span>
+                </div>
+                <strong th:text="${dashboard.thisWeek}">0</strong>
+                <h2>Added This Week</h2>
+                <p>New moments captured recently.</p>
+                <span class="metric-art metric-art-bars"></span>
+            </article>
+
+            <article class="metric-card metric-amber">
+                <div class="metric-card-top">
+                    <span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg></span>
+                    <span class="metric-chip">In progress</span>
+                </div>
+                <strong th:text="${dashboard.activePromises}">0</strong>
+                <h2>Active Promises</h2>
+                <p>Commitments still waiting for action.</p>
+                <span class="metric-art metric-art-target"></span>
+            </article>
+
+            <article class="metric-card metric-navy">
+                <div class="metric-card-top">
+                    <span class="metric-icon"><svg class="icon"><use href="/images/ui-icons.svg#repeat"></use></svg></span>
+                    <span class="metric-chip">Review</span>
+                </div>
+                <strong th:text="${dashboard.brokenPromises}">0</strong>
+                <h2>Broken Promises</h2>
+                <p>Commitments that need a better plan.</p>
+                <span class="metric-art metric-art-wave"></span>
+            </article>
+        </section>
+
+        <section class="dashboard-primary-grid">
+            <article class="panel panel-score">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">Semester progress</span>
+                        <h2>Survival Score</h2>
+                    </div>
+                    <a class="inline-link" th:href="@{/afsos/report}">View report
+                        <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                    </a>
+                </div>
+
+                <div class="score-layout">
+                    <div class="score-ring" th:style="${'--score:' + dashboard.survivalScore}">
+                        <div class="score-ring-inner">
+                            <strong th:text="${dashboard.survivalScore}">72</strong>
+                            <span>out of 100</span>
+                        </div>
+                    </div>
+                    <div class="score-copy">
+                        <span class="status-pill status-score" th:text="${dashboard.survivalStatus}">Slightly damaged</span>
+                        <h3>Your semester is still recoverable.</h3>
+                        <p>Use the category pattern and promise list to focus on the next practical improvement.</p>
+                        <div class="score-facts">
+                            <span><strong th:text="${dashboard.mostCommonCategory}">Attendance</strong>Most common category</span>
+                            <span><strong th:text="${dashboard.highestLevel}">Boro Afsos</strong>Highest level recorded</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <article class="panel panel-category">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">Visual pattern</span>
+                        <h2>Afsos by Category</h2>
+                    </div>
+                </div>
+
+                <div class="empty-visual" th:if="${dashboard.categoryBreakdown.isEmpty()}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#report"></use></svg>
+                    <p>Add your first Afsos to unlock category insights.</p>
+                </div>
+
+                <div class="category-visual" th:unless="${dashboard.categoryBreakdown.isEmpty()}" data-category-chart>
+                    <div class="donut-wrap">
+                        <div class="donut-chart" data-donut-chart>
+                            <div class="donut-center">
+                                <strong th:text="${dashboard.totalAfsos}">0</strong>
+                                <span>Total</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="category-legend" data-chart-items>
+                        <div class="category-legend-item" th:each="entry,stat : ${dashboard.categoryBreakdown}"
+                             th:attr="data-value=${entry.value},data-index=${stat.index}">
+                            <span class="legend-dot"></span>
+                            <span th:text="${entry.key}">Category</span>
+                            <strong th:text="${entry.value}">0</strong>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+
+        <section class="dashboard-secondary-grid">
+            <article class="panel panel-activity">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">Recent activity</span>
+                        <h2>Latest Reflections</h2>
+                    </div>
+                    <a class="inline-link" th:href="@{/afsos}">See all
+                        <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                    </a>
+                </div>
+
+                <div class="empty-visual compact" th:if="${#lists.isEmpty(dashboard.recentAfsos)}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg>
+                    <p>No reflections recorded yet.</p>
+                    <a class="button button-blue button-small" th:href="@{/afsos/new}">Record the first one</a>
+                </div>
+
+                <div class="activity-list" th:unless="${#lists.isEmpty(dashboard.recentAfsos)}">
+                    <a class="activity-item" th:each="afsos,stat : ${dashboard.recentAfsos}"
+                       th:href="@{/afsos/details/{id}(id=${afsos.id})}"
+                       th:classappend="${' accent-' + (stat.index % 4)}">
+                        <time class="activity-date" th:datetime="${afsos.regretDate}">
+                            <strong th:text="${#temporals.format(afsos.regretDate, 'dd')}">30</strong>
+                            <span th:text="${#temporals.format(afsos.regretDate, 'MMM')}">Jul</span>
+                        </time>
+                        <span class="activity-symbol">
+                            <svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg>
+                        </span>
+                        <span class="activity-copy">
+                            <strong th:text="${afsos.title}">Sent the wrong file</strong>
+                            <small><span th:text="${afsos.category.label}">Teacher Issue</span> · <span th:text="${afsos.status.label}">Fixed</span></small>
+                        </span>
+                        <span class="level-tag" th:classappend="${' level-' + #strings.toLowerCase(afsos.level.name())}" th:text="${afsos.level.label}">Choto Afsos</span>
+                        <svg class="icon activity-arrow"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                    </a>
+                </div>
+            </article>
+
+            <article class="panel panel-promises">
+                <div class="panel-heading">
+                    <div>
+                        <span class="section-kicker">Next actions</span>
+                        <h2>Upcoming Promises</h2>
+                    </div>
+                    <a class="inline-link" th:href="@{/promises}">Manage
+                        <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                    </a>
+                </div>
+
+                <div class="empty-visual compact" th:if="${#lists.isEmpty(dashboard.upcomingPromises)}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg>
+                    <p>No active promises right now.</p>
+                </div>
+
+                <div class="promise-preview-list" th:unless="${#lists.isEmpty(dashboard.upcomingPromises)}">
+                    <div class="promise-preview" th:each="promise,stat : ${dashboard.upcomingPromises}" th:classappend="${' accent-' + (stat.index % 4)}">
+                        <span class="promise-preview-icon">
+                            <svg class="icon"><use href="/images/ui-icons.svg#target"></use></svg>
+                        </span>
+                        <span class="promise-preview-copy">
+                            <strong th:text="${promise.title}">Submit assignment early</strong>
+                            <small th:text="${'Target: ' + #temporals.format(promise.targetDate, 'dd MMM yyyy')}">Target</small>
+                        </span>
+                        <span class="status-pill status-active">Active</span>
+                    </div>
+                </div>
+
+                <a class="promise-callout" th:href="@{/promises/new}">
+                    <span>
+                        <svg class="icon"><use href="/images/ui-icons.svg#plus"></use></svg>
+                    </span>
+                    <div><strong>Create a clear promise</strong><small>Turn one lesson into one action.</small></div>
+                    <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                </a>
+            </article>
+        </section>
+
+        <section class="pattern-banner" th:if="${!#strings.isEmpty(dashboard.repeatedWarning)}">
+            <span class="pattern-banner-icon">
+                <svg class="icon"><use href="/images/ui-icons.svg#alert"></use></svg>
+            </span>
+            <div>
+                <span>Pattern detected</span>
+                <strong th:text="${dashboard.repeatedWarning}">Repeated pattern</strong>
+            </div>
+            <a th:href="@{/afsos/report}">Review pattern
+                <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+            </a>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

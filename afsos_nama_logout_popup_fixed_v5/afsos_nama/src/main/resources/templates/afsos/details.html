@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${afsos.title + ' | Afsos Nama'}">Afsos Details</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('afsos')}"></div>
+    <main class="app-main">
+        <div th:replace="~{fragments/messages :: messages}"></div>
+
+        <a class="back-navigation" th:href="@{/afsos}">
+            <svg class="icon"><use href="/images/ui-icons.svg#arrow-left"></use></svg>
+            Back to My Afsos
+        </a>
+
+        <section class="details-hero" th:classappend="${' level-theme-' + #strings.toLowerCase(afsos.level.name())}">
+            <div class="details-hero-copy">
+                <div class="details-badges">
+                    <span class="category-badge" th:text="${afsos.category.label}">Category</span>
+                    <span class="level-tag" th:classappend="${' level-' + #strings.toLowerCase(afsos.level.name())}" th:text="${afsos.level.label}">Level</span>
+                    <span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(afsos.status.name())}" th:text="${afsos.status.label}">Status</span>
+                </div>
+                <h1 th:text="${afsos.title}">Afsos title</h1>
+                <p>
+                    Recorded on <strong th:text="${#temporals.format(afsos.regretDate, 'dd MMMM yyyy')}">30 July 2026</strong>
+                </p>
+            </div>
+            <div class="details-hero-actions">
+                <a class="button button-blue" th:href="@{/afsos/edit/{id}(id=${afsos.id})}">
+                    <svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg>
+                    Edit
+                </a>
+                <form th:action="@{/afsos/delete/{id}(id=${afsos.id})}" method="post" data-confirm="Delete this Afsos permanently?">
+                    <button class="button button-danger" type="submit">
+                        <svg class="icon"><use href="/images/ui-icons.svg#trash"></use></svg>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <section class="details-grid">
+            <article class="reflection-story">
+                <div class="story-section">
+                    <span class="story-index story-blue">01</span>
+                    <div>
+                        <span class="section-kicker">What happened</span>
+                        <p th:text="${afsos.description}">Description</p>
+                    </div>
+                </div>
+
+                <div class="story-section" th:if="${afsos.consequence != null && !afsos.consequence.isBlank()}">
+                    <span class="story-index story-coral">02</span>
+                    <div>
+                        <span class="section-kicker">Consequence</span>
+                        <p th:text="${afsos.consequence}">Consequence</p>
+                    </div>
+                </div>
+
+                <div class="lesson-highlight">
+                    <span class="lesson-highlight-icon"><svg class="icon"><use href="/images/ui-icons.svg#spark"></use></svg></span>
+                    <div>
+                        <span>Lesson learned</span>
+                        <strong th:text="${afsos.lessonLearned != null && !afsos.lessonLearned.isBlank() ? afsos.lessonLearned : 'No lesson has been added yet.'}">Lesson</strong>
+                    </div>
+                </div>
+            </article>
+
+            <aside class="details-insight-column">
+                <article class="detail-info-card detail-card-blue">
+                    <span class="detail-info-icon"><svg class="icon"><use href="/images/ui-icons.svg#school"></use></svg></span>
+                    <h2>Academic Context</h2>
+                    <dl>
+                        <div><dt>Course</dt><dd th:text="${afsos.relatedCourse != null && !afsos.relatedCourse.isBlank() ? afsos.relatedCourse : 'Not selected'}">Course</dd></div>
+                        <div><dt>Semester</dt><dd th:text="${afsos.semester != null && !afsos.semester.isBlank() ? afsos.semester : 'Not selected'}">Semester</dd></div>
+                        <div><dt>Category</dt><dd th:text="${afsos.category.label}">Category</dd></div>
+                    </dl>
+                </article>
+
+                <article class="detail-info-card detail-card-amber">
+                    <span class="detail-info-icon"><svg class="icon"><use href="/images/ui-icons.svg#messages"></use></svg></span>
+                    <h2>Sharing Status</h2>
+                    <p th:text="${afsos.sharedAnonymously ? (afsos.approvedForFeed ? 'Published anonymously in Campus Confessions.' : 'Waiting for admin approval.') : 'Private reflection — visible only to you.'}">Private</p>
+                </article>
+
+                <article class="detail-info-card detail-card-coral">
+                    <span class="detail-info-icon"><svg class="icon"><use href="/images/ui-icons.svg#alert"></use></svg></span>
+                    <h2>Impact Level</h2>
+                    <strong th:text="${afsos.level.label}">Level</strong>
+                    <p>Use this record to avoid repeating the same pattern.</p>
+                </article>
+            </aside>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

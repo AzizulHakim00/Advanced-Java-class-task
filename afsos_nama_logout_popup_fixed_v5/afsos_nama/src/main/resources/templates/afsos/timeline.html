@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timeline | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/navigation :: navigation('timeline')}"></div>
+    <main class="app-main">
+        <header class="workspace-header">
+            <div>
+                <span class="page-kicker">Semester journey</span>
+                <h1>Your Afsos Timeline</h1>
+                <p>Follow the semester from one decision to the next and spot repeated patterns.</p>
+            </div>
+            <a class="button button-coral" th:href="@{/afsos/new}">
+                <svg class="icon"><use href="/images/ui-icons.svg#plus"></use></svg>
+                Add Afsos
+            </a>
+        </header>
+
+        <section class="timeline-overview" th:unless="${#lists.isEmpty(afsosList)}">
+            <div class="timeline-overview-copy">
+                <span class="timeline-overview-icon"><svg class="icon"><use href="/images/ui-icons.svg#timeline"></use></svg></span>
+                <div><strong th:text="${#lists.size(afsosList)}">0</strong><span>moments in your semester journey</span></div>
+            </div>
+            <div class="timeline-overview-legend">
+                <span><i class="legend-blue"></i>Low</span>
+                <span><i class="legend-amber"></i>Medium</span>
+                <span><i class="legend-coral"></i>High</span>
+                <span><i class="legend-navy"></i>Extreme</span>
+            </div>
+        </section>
+
+        <section class="empty-page-state" th:if="${#lists.isEmpty(afsosList)}">
+            <span class="empty-page-icon"><svg class="icon"><use href="/images/ui-icons.svg#timeline"></use></svg></span>
+            <h2>Your timeline is empty</h2>
+            <p>Record an Afsos to start the semester journey.</p>
+            <a class="button button-coral" th:href="@{/afsos/new}">Add Afsos</a>
+        </section>
+
+        <section class="journey-board" th:unless="${#lists.isEmpty(afsosList)}" data-journey-timeline>
+            <div class="journey-board-header">
+                <div><span class="section-kicker">Chronological view</span><h2>Semester Journey</h2></div>
+                <span>Newest first</span>
+            </div>
+            <div class="journey-scroll">
+                <div class="journey-canvas" th:style="${'--journey-count:' + #lists.size(afsosList)}">
+                    <svg class="journey-path" data-journey-path aria-hidden="true"></svg>
+                    <article class="journey-node" th:each="afsos,stat : ${afsosList}"
+                             th:classappend="${' journey-' + #strings.toLowerCase(afsos.level.name()) + (stat.index % 2 == 0 ? ' journey-top' : ' journey-bottom')}"
+                             th:attr="data-journey-index=${stat.index}">
+                        <a class="journey-card" th:href="@{/afsos/details/{id}(id=${afsos.id})}">
+                            <span class="journey-card-icon"><svg class="icon"><use href="/images/ui-icons.svg#book"></use></svg></span>
+                            <time th:datetime="${afsos.regretDate}">
+                                <strong th:text="${#temporals.format(afsos.regretDate, 'dd')}">30</strong>
+                                <span th:text="${#temporals.format(afsos.regretDate, 'MMM yyyy')}">Jul 2026</span>
+                            </time>
+                            <h3 th:text="${afsos.title}">Afsos title</h3>
+                            <p th:text="${#strings.abbreviate(afsos.description, 95)}">Description</p>
+                            <div class="journey-card-tags">
+                                <span class="category-badge" th:text="${afsos.category.label}">Category</span>
+                                <span class="status-pill" th:classappend="${' status-' + #strings.toLowerCase(afsos.status.name())}" th:text="${afsos.status.label}">Status</span>
+                            </div>
+                        </a>
+                        <span class="journey-dot"><svg class="icon"><use href="/images/ui-icons.svg#spark"></use></svg></span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="timeline-list-mobile" th:unless="${#lists.isEmpty(afsosList)}">
+            <a class="mobile-timeline-item" th:each="afsos : ${afsosList}" th:href="@{/afsos/details/{id}(id=${afsos.id})}">
+                <time><strong th:text="${#temporals.format(afsos.regretDate, 'dd')}">30</strong><span th:text="${#temporals.format(afsos.regretDate, 'MMM')}">Jul</span></time>
+                <span class="mobile-timeline-rail"></span>
+                <div><span class="category-badge" th:text="${afsos.category.label}">Category</span><h2 th:text="${afsos.title}">Title</h2><p th:text="${#strings.abbreviate(afsos.description, 90)}">Description</p></div>
+                <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+            </a>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

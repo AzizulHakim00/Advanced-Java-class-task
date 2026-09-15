@@ -1,6 +1,8 @@
 package bd.edu.seu.printpulse;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface PrintRequestInterface extends JpaRepository<PrintRequest, Integer> {
+@Repository
+public interface PrintRequestInterface extends MongoRepository<PrintRequest, Integer> {
 }

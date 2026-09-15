@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <title>Sign In | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body class="auth-body auth-login-body">
+<main class="login-shell">
+    <section class="login-showcase" aria-label="About Afsos Nama">
+        <div class="login-orbit login-orbit-one"></div>
+        <div class="login-orbit login-orbit-two"></div>
+        <div class="login-orbit-dot login-orbit-dot-one"></div>
+        <div class="login-orbit-dot login-orbit-dot-two"></div>
+
+        <a class="login-brand" th:href="@{/login}" aria-label="Afsos Nama sign in">
+            <img th:src="@{/images/brand-logo.svg}" alt="Afsos Nama">
+            <span>
+                <strong>Afsos Nama</strong>
+                <small>Reflect · Learn · Improve</small>
+            </span>
+        </a>
+
+        <div class="login-showcase-copy">
+            <h1>Small reflections today,<br><span>better decisions tomorrow.</span></h1>
+            <p>A safe space to record what happened, learn the pattern, and build practical promises for growth.</p>
+        </div>
+
+        <section class="login-journey-card" aria-label="Reflection journey preview">
+            <header>
+                <strong>Your reflection journey</strong>
+                <span>This semester <svg class="icon"><use href="/images/ui-icons.svg#chevron-down"></use></svg></span>
+            </header>
+            <div class="login-journey-body">
+                <div class="login-journey-stats">
+                    <div class="journey-stat journey-stat-blue">
+                        <span class="journey-stat-icon"><svg class="icon"><use href="/images/ui-icons.svg#edit"></use></svg></span>
+                        <p><small>Confessions logged</small><strong>12</strong><em>This semester</em></p>
+                    </div>
+                    <div class="journey-stat journey-stat-green">
+                        <span class="journey-stat-icon"><svg class="icon"><use href="/images/ui-icons.svg#trend"></use></svg></span>
+                        <p><small>Patterns noticed</small><strong>5</strong><em>Recurring themes</em></p>
+                    </div>
+                    <div class="journey-stat journey-stat-coral">
+                        <span class="journey-stat-icon"><svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg></span>
+                        <p><small>Promises kept</small><strong>8</strong><em>Steps toward improvement</em></p>
+                    </div>
+                </div>
+
+                <div class="login-mini-chart" aria-label="Reflection activity preview">
+                    <span class="login-chart-title">Reflection activity</span>
+                    <div class="login-chart-area">
+                        <span class="chart-gridline chart-gridline-top"></span>
+                        <span class="chart-gridline chart-gridline-mid"></span>
+                        <span class="chart-gridline chart-gridline-bottom"></span>
+                        <div class="login-bar" style="--bar-height:38%"><i>Jan</i></div>
+                        <div class="login-bar" style="--bar-height:56%"><i>Feb</i></div>
+                        <div class="login-bar" style="--bar-height:82%"><i>Mar</i></div>
+                        <div class="login-bar" style="--bar-height:46%"><i>Apr</i></div>
+                        <div class="login-bar" style="--bar-height:68%"><i>May</i></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="login-privacy-note">
+            <span><svg class="icon"><use href="/images/ui-icons.svg#shield"></use></svg></span>
+            <p>Your reflections remain private unless<br>you choose anonymous sharing.</p>
+        </div>
+    </section>
+
+    <section class="login-form-area">
+        <div class="login-mobile-brand">
+            <img th:src="@{/images/brand-logo.svg}" alt="">
+            <span><strong>Afsos Nama</strong><small>Reflect · Learn · Improve</small></span>
+        </div>
+
+        <div class="login-form-card">
+            <div class="auth-heading login-heading">
+                <span class="page-kicker">Welcome back</span>
+                <h2>Sign in to your workspace</h2>
+                <p>Continue your semester reflection journey.</p>
+            </div>
+
+            <div th:replace="~{fragments/messages :: messages}"></div>
+            <div class="auth-message auth-message-danger" th:if="${param.error}">
+                <svg class="icon"><use href="/images/ui-icons.svg#alert"></use></svg>
+                <div><strong>Sign-in failed</strong><span>Check your email and password, then try again.</span></div>
+            </div>
+            <div class="auth-message auth-message-success" th:if="${param.logout}">
+                <svg class="icon"><use href="/images/ui-icons.svg#check"></use></svg>
+                <div><strong>Signed out</strong><span>Your session ended successfully.</span></div>
+            </div>
+
+            <form class="auth-form login-form" th:action="@{/login}" method="post" autocomplete="off">
+                <div class="form-field">
+                    <label for="username"><span>Email address</span></label>
+                    <div class="input-shell auth-input-shell login-input-shell">
+                        <svg class="icon"><use href="/images/ui-icons.svg#mail"></use></svg>
+                        <input id="username" name="username" type="email" autocomplete="off" placeholder="student@example.com" required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-field">
+                    <label for="password"><span>Password</span></label>
+                    <div class="input-shell auth-input-shell login-input-shell">
+                        <svg class="icon"><use href="/images/ui-icons.svg#lock"></use></svg>
+                        <input id="password" name="password" type="password" autocomplete="off" placeholder="Enter your password" required>
+                        <button class="password-toggle" type="button" data-password-toggle="password" aria-label="Show password">
+                            <svg class="icon"><use href="/images/ui-icons.svg#eye"></use></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="button button-blue auth-submit login-submit" type="submit">
+                    <span>Sign In</span>
+                    <svg class="icon"><use href="/images/ui-icons.svg#arrow-right"></use></svg>
+                </button>
+            </form>
+
+            <div class="auth-divider login-divider"><span>New to Afsos Nama?</span></div>
+            <a class="button login-create-account" th:href="@{/register}">
+                <svg class="icon"><use href="/images/ui-icons.svg#user-plus"></use></svg>
+                <span>Create Student Account</span>
+            </a>
+        </div>
+    </section>
+</main>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

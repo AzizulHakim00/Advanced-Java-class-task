@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="messages" class="toast-stack">
+    <div class="app-alert app-alert-success" th:if="${successMessage}" role="status">
+        <span class="app-alert-icon">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#check"></use></svg>
+        </span>
+        <div>
+            <strong>Done</strong>
+            <span th:text="${successMessage}">Success message</span>
+        </div>
+        <button class="alert-close" type="button" aria-label="Dismiss message">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#x"></use></svg>
+        </button>
+    </div>
+    <div class="app-alert app-alert-danger" th:if="${errorMessage}" role="alert">
+        <span class="app-alert-icon">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#alert"></use></svg>
+        </span>
+        <div>
+            <strong>Needs attention</strong>
+            <span th:text="${errorMessage}">Error message</span>
+        </div>
+        <button class="alert-close" type="button" aria-label="Dismiss message">
+            <svg class="icon" aria-hidden="true"><use href="/images/ui-icons.svg#x"></use></svg>
+        </button>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Something Went Wrong | Afsos Nama</title>
+    <link rel="icon" th:href="@{/images/brand-logo.svg}" type="image/svg+xml">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/design-v3.css}">
+</head>
+<body class="error-body">
+<main class="error-page">
+    <div class="error-visual"><img th:src="@{/images/brand-logo.svg}" alt="Afsos Nama"><span>!</span></div>
+    <span class="page-kicker">Unexpected error</span>
+    <h1>Something went wrong.</h1>
+    <p>The page could not be completed. Return to the dashboard and try again.</p>
+    <div class="error-actions"><a class="button button-blue" th:href="@{/dashboard}"><svg class="icon"><use href="/images/ui-icons.svg#dashboard"></use></svg>Dashboard</a><a class="button button-ghost" href="javascript:history.back()">Go Back</a></div>
+</main>
+</body>
+</html>
